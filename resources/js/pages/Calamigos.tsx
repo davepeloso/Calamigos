@@ -1,4 +1,61 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'motion/react';
+
+// Animated Hero Image Component
+const AnimatedHeroImage = ({ image, title, isActive }: any) => {
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 50]);
+
+  return (
+    <motion.div 
+      className="relative h-96 md:h-[32rem] rounded-2xl overflow-hidden mb-12"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ 
+        opacity: isActive ? 1 : 0.3, 
+        scale: isActive ? 1 : 0.95,
+        transition: { duration: 0.8, ease: "easeOut" }
+      }}
+    >
+      <motion.img 
+        src={image} 
+        alt={title}
+        className="w-full h-full object-cover"
+        style={{ scale, y }}
+      />
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+      />
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isActive ? 1 : 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+      >
+        <div className="text-center text-white">
+          <motion.h3 
+            className="text-4xl md:text-6xl font-bold mb-4"
+            style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            {title}
+          </motion.h3>
+          <motion.div
+            className="w-24 h-1 bg-white mx-auto"
+            initial={{ width: 0 }}
+            animate={{ width: 96 }}
+            transition={{ delay: 0.9, duration: 0.8, ease: "easeOut" }}
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Explore Mode Component
 const ExploreMode = ({ 
@@ -58,52 +115,107 @@ const ExploreMode = ({
         className="flex-1 overflow-y-auto"
       >
         {exploreSections.map((section: any, index: number) => (
-          <div key={section.id} className="min-h-screen flex items-center justify-center px-5 md:px-8">
+          <motion.div 
+            key={section.id} 
+            className="min-h-screen flex items-center justify-center px-5 md:px-8"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ 
+              opacity: activeSection === index ? 1 : 0.3, 
+              y: activeSection === index ? 0 : 20,
+              transition: { duration: 0.6, ease: "easeOut" }
+            }}
+          >
             <div className="max-w-4xl mx-auto text-center">
-              <div className="mb-8">
+              <motion.div 
+                className="mb-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: activeSection === index ? 1 : 0.5, 
+                  scale: activeSection === index ? 1 : 0.9,
+                  transition: { delay: 0.2, duration: 0.5 }
+                }}
+              >
                 <span className="inline-block px-4 py-2 text-xs uppercase tracking-[0.24em] rounded-full" style={{ background: '#ECE6DA', color: brand.sage }}>
                   Chapter {index + 1}
                 </span>
-              </div>
-              <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: brand.text }}>
+              </motion.div>
+              <motion.h1 
+                className="text-5xl md:text-7xl font-bold mb-6" 
+                style={{ fontFamily: 'Playfair Display, Georgia, serif', color: brand.text }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ 
+                  opacity: activeSection === index ? 1 : 0.3, 
+                  y: activeSection === index ? 0 : 10,
+                  transition: { delay: 0.3, duration: 0.7 }
+                }}
+              >
                 {section.title}
-              </h1>
-              <h2 className="text-2xl md:text-3xl mb-8" style={{ color: brand.wood, fontFamily: 'Playfair Display, Georgia, serif' }}>
+              </motion.h1>
+              <motion.h2 
+                className="text-2xl md:text-3xl mb-8" 
+                style={{ color: brand.wood, fontFamily: 'Playfair Display, Georgia, serif' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: activeSection === index ? 1 : 0.3, 
+                  y: activeSection === index ? 0 : 5,
+                  transition: { delay: 0.4, duration: 0.6 }
+                }}
+              >
                 {section.subtitle}
-              </h2>
-              <p className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto" style={{ color: brand.text }}>
+              </motion.h2>
+              <motion.p 
+                className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto" 
+                style={{ color: brand.text }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: activeSection === index ? 1 : 0.3, 
+                  y: activeSection === index ? 0 : 5,
+                  transition: { delay: 0.5, duration: 0.6 }
+                }}
+              >
                 {section.content}
-              </p>
-              <div className="relative h-96 md:h-[32rem] rounded-2xl overflow-hidden mb-12">
-                <img 
-                  src={section.image} 
-                  alt={section.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              </div>
-              <div className="flex justify-center gap-4">
+              </motion.p>
+              
+              <AnimatedHeroImage 
+                image={section.image} 
+                title={section.title}
+                isActive={activeSection === index}
+              />
+              
+              <motion.div 
+                className="flex justify-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: activeSection === index ? 1 : 0.3, 
+                  y: activeSection === index ? 0 : 10,
+                  transition: { delay: 0.8, duration: 0.5 }
+                }}
+              >
                 {index > 0 && (
-                  <button
+                  <motion.button
                     onClick={() => scrollToSection(index - 1)}
                     className="px-6 py-3 rounded-full border transition-all hover:shadow-md"
                     style={{ borderColor: brand.green, color: brand.green }}
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     Previous
-                  </button>
+                  </motion.button>
                 )}
                 {index < exploreSections.length - 1 && (
-                  <button
+                  <motion.button
                     onClick={() => scrollToSection(index + 1)}
                     className="px-6 py-3 rounded-full text-white transition-all hover:shadow-lg"
                     style={{ background: brand.green }}
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     Next Chapter
-                  </button>
+                  </motion.button>
                 )}
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -198,7 +310,7 @@ const NavigateMode = ({
           <div className="text-sm font-medium mb-4">Quick Find</div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {quickFind.map((item: any) => (
-              <button
+              <motion.button
                 key={item.label}
                 onClick={() => handleLocationSelect(item.label)}
                 className={`rounded-[18px] border p-4 text-left transition duration-300 ease-in-out hover:-translate-y-0.5 ${
@@ -208,12 +320,17 @@ const NavigateMode = ({
                   borderColor: selectedLocation === item.label ? brand.green : brand.divider, 
                   background: '#FBF8F2'
                 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
               >
                 <div className="text-xs uppercase tracking-[0.16em]" style={{ color: brand.sage }}>
                   {item.kind}
                 </div>
                 <div className="mt-2 text-sm font-medium md:text-[15px]">{item.label}</div>
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -541,64 +658,110 @@ export default function CalamigosHybridPrototype() {
         </div>
       </header>
 
+      {/* Main Hero Section */}
       <section className="mx-auto max-w-7xl px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-10">
-        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
-          <div
+        <motion.div 
+          className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.div
             className="overflow-hidden rounded-[20px] border"
             style={{ borderColor: brand.divider, background: brand.cream }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
           >
             <div className="relative aspect-[16/10] overflow-hidden">
-              <img
+              <motion.img
                 src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1800&q=80"
                 alt="Cinematic aerial landscape placeholder"
                 className="h-full w-full object-cover"
+                initial={{ scale: 1.1 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+              />
+              <motion.div 
+                className="absolute bottom-0 left-0 right-0 p-6 md:p-8"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+              >
                 <div className="mb-3 text-xs uppercase tracking-[0.24em] text-white/80">
                   Hybrid concept
                 </div>
-                <h1
+                <motion.h1
                   className="max-w-3xl text-4xl leading-tight text-white md:text-6xl"
                   style={{
                     fontFamily: 'Playfair Display, Georgia, serif',
                     letterSpacing: '0.02em',
                   }}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.9, duration: 0.7 }}
                 >
                   A cinematic property guide with real wayfinding utility.
-                </h1>
-              </div>
+                </motion.h1>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
             className="flex flex-col justify-between rounded-[18px] border p-6 md:p-8"
             style={{ borderColor: brand.divider, background: brand.cream }}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.7 }}
           >
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+            >
               <div className="mb-3 text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
                 Product framing
               </div>
-              <h2
+              <motion.h2
                 className="text-3xl leading-tight md:text-4xl"
                 style={{
                   fontFamily: 'Playfair Display, Georgia, serif',
                   letterSpacing: '0.02em',
                 }}
+                initial={{ y: 15, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
               >
                 One destination. Two clear guest modes.
-              </h2>
-              <p className="mt-4 max-w-xl text-[15px] leading-7 md:text-[17px]">
+              </motion.h2>
+              <motion.p 
+                className="mt-4 max-w-xl text-[15px] leading-7 md:text-[17px]"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+              >
                 Prospective visitors can explore the property through beautiful editorial storytelling.
                 Guests already on-site can skip straight to a map-first interface to find venues,
                 restrooms, parking, and services without friction.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
-            <div className="mt-8 grid gap-4">
-              <div
+            <motion.div 
+              className="mt-8 grid gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+            >
+              <motion.div
                 className="rounded-[18px] border p-5"
                 style={{ borderColor: brand.divider, background: '#EFE9DD' }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               >
                 <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
                   Mode 01
@@ -612,10 +775,11 @@ export default function CalamigosHybridPrototype() {
                 <p className="mt-2 text-sm leading-6">
                   Cinematic sections, venue highlights, atmosphere, and orientation tied back to the property map.
                 </p>
-              </div>
-              <div
+              </motion.div>
+              <motion.div
                 className="rounded-[18px] border p-5"
                 style={{ borderColor: brand.divider, background: '#EFE9DD' }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               >
                 <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
                   Mode 02
@@ -629,10 +793,10 @@ export default function CalamigosHybridPrototype() {
                 <p className="mt-2 text-sm leading-6">
                   Quick-access essentials with a mobile-first map, location cards, and fast paths for common needs.
                 </p>
-              </div>
-            </div>
-          </div>
-        </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
