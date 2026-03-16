@@ -55,10 +55,22 @@ const pages = [
         chapter: '07',
     },
     {
+        id: 'scrollcraft',
+        label: 'Scroll Craft',
+        href: '/moodboard/scrollcraft',
+        chapter: '08',
+    },
+    {
+        id: 'snapflow',
+        label: 'Snap Flow',
+        href: '/moodboard/snapflow',
+        chapter: '09',
+    },
+    {
         id: 'designs',
         label: 'Playground',
         href: '/designs',
-        chapter: '08',
+        chapter: '10',
     },
 ];
 

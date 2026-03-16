@@ -1,1242 +1,1240 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'motion/react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import SmoothScroll from '@/components/SmoothScroll';
 
-// Animated Hero Image Component
-const AnimatedHeroImage = ({ image, title, isActive }: any) => {
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, 50]);
+gsap.registerPlugin(ScrollTrigger);
 
-  return (
-    <motion.div 
-      className="relative h-96 md:h-[32rem] rounded-2xl overflow-hidden mb-12"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ 
-        opacity: isActive ? 1 : 0.3, 
-        scale: isActive ? 1 : 0.95,
-        transition: { duration: 0.8, ease: "easeOut" }
-      }}
-    >
-      <motion.img 
-        src={image} 
-        alt={title}
-        className="w-full h-full object-cover"
-        style={{ scale, y }}
-      />
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-      />
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-      >
-        <div className="text-center text-white">
-          <motion.h3 
-            className="text-4xl md:text-6xl font-bold mb-4"
-            style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-          >
-            {title}
-          </motion.h3>
-          <motion.div
-            className="w-24 h-1 bg-white mx-auto"
-            initial={{ width: 0 }}
-            animate={{ width: 96 }}
-            transition={{ delay: 0.9, duration: 0.8, ease: "easeOut" }}
-          />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Explore Mode Component
-const ExploreMode = ({ 
-  brand, 
-  exploreSections, 
-  mapPins, 
-  activeSection, 
-  scrollProgress, 
-  scrollContainerRef, 
-  scrollToSection, 
-  setCurrentMode 
-}: any) => (
-  <div className="min-h-screen" style={{ background: brand.sand }}>
-    {/* Progress Bar */}
-    <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-      <div
-        className="h-full transition-all duration-300"
-        style={{ width: `${scrollProgress}%`, background: brand.green }}
-      />
-    </div>
-
-    {/* Header */}
-    <header className="sticky top-0 z-40 border-b backdrop-blur" style={{ background: 'rgba(234, 228, 216, 0.88)', borderColor: brand.divider }}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <div>
-          <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-            Explore Mode
-          </div>
-          <div className="text-lg md:text-xl" style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}>
-            Calamigos Ranch
-          </div>
-        </div>
-        <div className="hidden items-center gap-3 md:flex">
-          <button
-            onClick={() => setCurrentMode('navigate')}
-            className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-            style={{ borderColor: brand.green, color: brand.green }}
-          >
-            Find Your Way
-          </button>
-          <button
-            onClick={() => setCurrentMode('home')}
-            className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-            style={{ borderColor: brand.divider, color: brand.text }}
-          >
-            Back to Home
-          </button>
-          <div className="relative group">
-            <button
-              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
-              style={{ borderColor: brand.sage, color: brand.sage }}
-            >
-              Moodboards
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <a
-                href="/moodboard/motion"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Motion Animations
-              </a>
-              <a
-                href="/moodboard/fonts"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Google Fonts
-              </a>
-              <a
-                href="/moodboard/scrollytelling"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Scrollytelling
-              </a>
-              <a
-                href="/moodboard/animations"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Design Animations
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    {/* Main Content */}
-    <div className="flex h-screen">
-      {/* Story Content */}
-      <div 
-        ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto"
-      >
-        {exploreSections.map((section: any, index: number) => (
-          <motion.div 
-            key={section.id} 
-            className="min-h-screen flex items-center justify-center px-5 md:px-8"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ 
-              opacity: activeSection === index ? 1 : 0.3, 
-              y: activeSection === index ? 0 : 20,
-              transition: { duration: 0.6, ease: "easeOut" }
-            }}
-          >
-            <div className="max-w-4xl mx-auto text-center">
-              <motion.div 
-                className="mb-8"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: activeSection === index ? 1 : 0.5, 
-                  scale: activeSection === index ? 1 : 0.9,
-                  transition: { delay: 0.2, duration: 0.5 }
-                }}
-              >
-                <span className="inline-block px-4 py-2 text-xs uppercase tracking-[0.24em] rounded-full" style={{ background: '#ECE6DA', color: brand.sage }}>
-                  Chapter {index + 1}
-                </span>
-              </motion.div>
-              <motion.h1 
-                className="text-5xl md:text-7xl font-bold mb-6" 
-                style={{ fontFamily: 'Playfair Display, Georgia, serif', color: brand.text }}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ 
-                  opacity: activeSection === index ? 1 : 0.3, 
-                  y: activeSection === index ? 0 : 10,
-                  transition: { delay: 0.3, duration: 0.7 }
-                }}
-              >
-                {section.title}
-              </motion.h1>
-              <motion.h2 
-                className="text-2xl md:text-3xl mb-8" 
-                style={{ color: brand.wood, fontFamily: 'Playfair Display, Georgia, serif' }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ 
-                  opacity: activeSection === index ? 1 : 0.3, 
-                  y: activeSection === index ? 0 : 5,
-                  transition: { delay: 0.4, duration: 0.6 }
-                }}
-              >
-                {section.subtitle}
-              </motion.h2>
-              <motion.p 
-                className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto" 
-                style={{ color: brand.text }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ 
-                  opacity: activeSection === index ? 1 : 0.3, 
-                  y: activeSection === index ? 0 : 5,
-                  transition: { delay: 0.5, duration: 0.6 }
-                }}
-              >
-                {section.content}
-              </motion.p>
-              
-              <AnimatedHeroImage 
-                image={section.image} 
-                title={section.title}
-                isActive={activeSection === index}
-              />
-              
-              <motion.div 
-                className="flex justify-center gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ 
-                  opacity: activeSection === index ? 1 : 0.3, 
-                  y: activeSection === index ? 0 : 10,
-                  transition: { delay: 0.8, duration: 0.5 }
-                }}
-              >
-                {index > 0 && (
-                  <motion.button
-                    onClick={() => scrollToSection(index - 1)}
-                    className="px-6 py-3 rounded-full border transition-all hover:shadow-md"
-                    style={{ borderColor: brand.green, color: brand.green }}
-                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Previous
-                  </motion.button>
-                )}
-                {index < exploreSections.length - 1 && (
-                  <motion.button
-                    onClick={() => scrollToSection(index + 1)}
-                    className="px-6 py-3 rounded-full text-white transition-all hover:shadow-lg"
-                    style={{ background: brand.green }}
-                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Next Chapter
-                  </motion.button>
-                )}
-              </motion.div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Map Sidebar */}
-      <div className="hidden lg:block w-96 border-l" style={{ borderColor: brand.divider, background: brand.cream }}>
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-            Property Map
-          </h3>
-          <div className="relative h-64 rounded-lg overflow-hidden mb-4" style={{ background: brand.sand }}>
-            <svg viewBox="0 0 600 420" className="absolute inset-0 h-full w-full">
-              <path d="M40 300 C 150 250, 210 250, 330 190 S 520 120, 560 100" fill="none" stroke={brand.sage} strokeWidth="12" strokeLinecap="round" opacity="0.65" />
-              <path d="M80 80 C 140 110, 180 150, 210 210 S 310 330, 430 350" fill="none" stroke={brand.sage} strokeWidth="8" strokeLinecap="round" opacity="0.28" />
-              <path d="M420 290 C 460 250, 500 240, 560 250" fill="none" stroke={brand.water} strokeWidth="24" strokeLinecap="round" opacity="0.55" />
-            </svg>
-            {mapPins.map((pin: any) => (
-              <div
-                key={pin.name}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
-                  exploreSections[activeSection]?.mapHighlight === pin.name ? 'scale-125 z-10' : ''
-                }`}
-                style={{ left: pin.x, top: pin.y }}
-              >
-                <div 
-                  className={`rounded-full border-2 border-white px-2 py-1 text-[10px] shadow-sm transition-all duration-500 ${
-                    exploreSections[activeSection]?.mapHighlight === pin.name ? 'bg-yellow-500' : ''
-                  }`}
-                  style={{ 
-                    background: exploreSections[activeSection]?.mapHighlight === pin.name ? '#EAB308' : brand.green, 
-                    color: 'white' 
-                  }}
-                >
-                  {pin.name}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-sm" style={{ color: brand.sage }}>
-            Currently viewing: <span className="font-medium" style={{ color: brand.text }}>{exploreSections[activeSection]?.title}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-// Navigate Mode Component
-const NavigateMode = ({ 
-  brand, 
-  quickFind, 
-  mapPins, 
-  selectedLocation, 
-  handleLocationSelect, 
-  setCurrentMode 
-}: any) => (
-  <div className="min-h-screen" style={{ background: brand.sand }}>
-    {/* Header */}
-    <header className="sticky top-0 z-40 border-b backdrop-blur" style={{ background: 'rgba(234, 228, 216, 0.88)', borderColor: brand.divider }}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <div>
-          <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-            Navigate Mode
-          </div>
-          <div className="text-lg md:text-xl" style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}>
-            Find Your Way
-          </div>
-        </div>
-        <div className="hidden items-center gap-3 md:flex">
-          <button
-            onClick={() => setCurrentMode('explore')}
-            className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-            style={{ borderColor: brand.green, color: brand.green }}
-          >
-            Explore the Ranch
-          </button>
-          <button
-            onClick={() => setCurrentMode('home')}
-            className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-            style={{ borderColor: brand.divider, color: brand.text }}
-          >
-            Back to Home
-          </button>
-          <div className="relative group">
-            <button
-              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
-              style={{ borderColor: brand.sage, color: brand.sage }}
-            >
-              Moodboards
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <a
-                href="/moodboard/motion"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Motion Animations
-              </a>
-              <a
-                href="/moodboard/fonts"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Google Fonts
-              </a>
-              <a
-                href="/moodboard/scrollytelling"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Scrollytelling
-              </a>
-              <a
-                href="/moodboard/animations"
-                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-              >
-                Design Animations
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    {/* Main Content */}
-    <div className="max-w-7xl mx-auto px-5 py-8 md:px-8">
-      <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        {/* Quick Find */}
-        <div className="rounded-[20px] border p-5 md:p-6" style={{ borderColor: brand.divider, background: brand.cream }}>
-          <div className="text-sm font-medium mb-4">Quick Find</div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            {quickFind.map((item: any) => (
-              <motion.button
-                key={item.label}
-                onClick={() => handleLocationSelect(item.label)}
-                className={`rounded-[18px] border p-4 text-left transition duration-300 ease-in-out hover:-translate-y-0.5 ${
-                  selectedLocation === item.label ? 'ring-2' : ''
-                }`}
-                style={{ 
-                  borderColor: selectedLocation === item.label ? brand.green : brand.divider, 
-                  background: '#FBF8F2'
-                }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="text-xs uppercase tracking-[0.16em]" style={{ color: brand.sage }}>
-                  {item.kind}
-                </div>
-                <div className="mt-2 text-sm font-medium md:text-[15px]">{item.label}</div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        {/* Map and Location Details */}
-        <div className="overflow-hidden rounded-[20px] border" style={{ borderColor: brand.divider, background: brand.cream }}>
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
-            {/* Map */}
-            <div className="relative min-h-[420px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: brand.divider }}>
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #F5F2EA 0%, #EAE4D8 100%)' }} />
-              <svg viewBox="0 0 600 420" className="absolute inset-0 h-full w-full">
-                <path d="M40 300 C 150 250, 210 250, 330 190 S 520 120, 560 100" fill="none" stroke={brand.sage} strokeWidth="12" strokeLinecap="round" opacity="0.65" />
-                <path d="M80 80 C 140 110, 180 150, 210 210 S 310 330, 430 350" fill="none" stroke={brand.sage} strokeWidth="8" strokeLinecap="round" opacity="0.28" />
-                <path d="M420 290 C 460 250, 500 240, 560 250" fill="none" stroke={brand.water} strokeWidth="24" strokeLinecap="round" opacity="0.55" />
-                <rect x="100" y="250" width="52" height="34" rx="8" fill={brand.green} opacity="0.95" />
-                <rect x="240" y="165" width="58" height="38" rx="8" fill={brand.green} opacity="0.95" />
-                <rect x="330" y="230" width="70" height="42" rx="8" fill={brand.green} opacity="0.95" />
-                <rect x="455" y="115" width="66" height="40" rx="8" fill={brand.green} opacity="0.95" />
-              </svg>
-              {mapPins.map((pin: any) => (
-                <div
-                  key={pin.name}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 ${
-                    selectedLocation === pin.name ? 'scale-125 z-10' : 'hover:scale-110'
-                  }`}
-                  style={{ left: pin.x, top: pin.y }}
-                  onClick={() => handleLocationSelect(pin.name)}
-                >
-                  <div 
-                    className={`rounded-full border-2 border-white px-2 py-1 text-[10px] shadow-sm transition-all duration-300 ${
-                      selectedLocation === pin.name ? 'bg-yellow-500' : ''
-                    }`}
-                    style={{ 
-                      background: selectedLocation === pin.name ? '#EAB308' : brand.green, 
-                      color: 'white' 
-                    }}
-                  >
-                    {pin.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Location Details */}
-            <div className="p-6 md:p-7">
-              <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
-                Selected location
-              </div>
-              <div className="mt-3 text-3xl" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {selectedLocation || 'Select a location'}
-              </div>
-              {selectedLocation && (
-                <>
-                  <p className="mt-4 text-[15px] leading-7">
-                    {selectedLocation === 'Redwood Grove' && 'Ceremony venue surrounded by mature trees. This space provides an intimate setting with natural acoustics and beautiful filtered light.'}
-                    {selectedLocation === 'The Pavilion' && 'Elegant reception space with open-air design. Perfect for dining and dancing with seamless indoor-outdoor flow.'}
-                    {selectedLocation === 'The Lake' && 'Scenic photo location with reflective water and natural landscaping. Ideal for golden hour photography.'}
-                    {selectedLocation === 'Parking' && 'Main guest parking area with accessible spaces and EV charging stations available.'}
-                    {selectedLocation === 'Guest Services' && 'Information desk, check-in services, and assistance for all guest needs.'}
-                    {selectedLocation === 'Restrooms' && 'Modern facilities with ADA-compliant restrooms and baby changing stations.'}
-                  </p>
-                  <div className="mt-6 space-y-3 text-sm">
-                    <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                      <span>Walking time from entrance</span>
-                      <span style={{ color: brand.green }}>
-                        {selectedLocation === 'Parking' ? '0 min' : 
-                         selectedLocation === 'Guest Services' ? '2 min' :
-                         selectedLocation === 'Restrooms' ? '3 min' : '5 min'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                      <span>Accessibility</span>
-                      <span style={{ color: brand.green }}>Available</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                      <span>Shuttle access</span>
-                      <span style={{ color: brand.green }}>
-                        {selectedLocation === 'Parking' || selectedLocation === 'Guest Services' ? 'Stop 1' : 'Nearby'}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    className="mt-6 rounded-full px-6 py-3 text-sm font-medium text-white transition-all hover:shadow-lg"
-                    style={{ background: brand.green }}
-                  >
-                    View directions
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-export default function CalamigosHybridPrototype() {
-  const [currentMode, setCurrentMode] = useState<'home' | 'explore' | 'navigate'>('home');
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const brand = {
-    green: '#2F4A3F',
-    greenDark: '#243A32',
+/* ================================================================== */
+/*  BRAND TOKENS                                                       */
+/* ================================================================== */
+const C = {
+    groveDark: '#1A2E25',
+    grove: '#2F4A3F',
+    groveLight: '#3D6152',
     sand: '#EAE4D8',
+    sandDark: '#D4CBBA',
     cream: '#F5F2EA',
+    creamWarm: '#FAF7F0',
     sage: '#7A8F82',
     wood: '#8A6B4F',
-    text: '#2C2C2C',
+    woodLight: '#A4845E',
+    charcoal: '#2C2C2C',
     divider: '#DCD6CA',
-    water: '#A8C0C8',
-  };
+    water: '#6B9FAF',
+} as const;
 
-  const featuredSpaces = [
-    {
-      name: 'Redwood Grove',
-      type: 'Ceremony Space',
-      blurb: 'A secluded ceremony setting beneath towering trees, designed to feel intimate and transportive.',
-      image:
-        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80',
-    },
-    {
-      name: 'The Pavilion',
-      type: 'Reception Space',
-      blurb: 'Open, airy, and elegant — ideal for a seamless transition from celebration to dinner and dancing.',
-      image:
-        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=80',
-    },
-    {
-      name: 'The Lake',
-      type: 'Photo Location',
-      blurb: 'A calm visual anchor on the property with reflective light, layered landscape, and cinematic atmosphere.',
-      image:
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80',
-    },
-  ];
+const display = "'Cormorant Garamond', Georgia, serif";
+const body = "'DM Sans', system-ui, sans-serif";
+const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
-  const quickFind = [
-    { label: 'Restrooms', kind: 'Essentials' },
-    { label: 'Parking', kind: 'Arrival' },
-    { label: 'Shuttle Stop', kind: 'Transit' },
-    { label: 'Redwood Grove', kind: 'Venue' },
-    { label: 'Oak Room', kind: 'Venue' },
-    { label: 'Guest Services', kind: 'Help' },
-  ];
+/* ================================================================== */
+/*  FONT LOADER                                                        */
+/* ================================================================== */
+function useFonts(): void {
+    useEffect(() => {
+        const id = '__calamigos-fonts';
+        if (document.getElementById(id)) return;
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href =
+            'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap';
+        document.head.appendChild(link);
+    }, []);
+}
 
-  const mapPins = [
-    { name: 'Parking', x: '18%', y: '72%', type: 'Arrival' },
-    { name: 'Guest Services', x: '28%', y: '52%', type: 'Help' },
-    { name: 'Redwood Grove', x: '47%', y: '34%', type: 'Venue' },
-    { name: 'Oak Room', x: '62%', y: '47%', type: 'Venue' },
-    { name: 'The Pavilion', x: '72%', y: '32%', type: 'Venue' },
-    { name: 'Restrooms', x: '56%', y: '58%', type: 'Essentials' },
-    { name: 'The Lake', x: '79%', y: '63%', type: 'Photo Location' },
-  ];
+/* ================================================================== */
+/*  LOCATION CATEGORIES                                                */
+/* ================================================================== */
+type Category = 'venues' | 'stay' | 'dining' | 'wellness' | 'services';
 
-  const exploreSections = [
-    {
-      id: 'welcome',
-      title: 'Welcome to Calamigos',
-      subtitle: 'Where Natural Beauty Meets Timeless Elegance',
-      content: 'Nestled in the heart of Malibu, Calamigos Ranch has been a sanctuary for unforgettable moments for over seven decades. Our story begins with a simple vision: to create a place where nature\'s beauty meets exceptional hospitality.',
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1800&q=80',
-      mapHighlight: null,
-    },
-    {
-      id: 'redwood',
-      title: 'Redwood Grove',
-      subtitle: 'Ceremony Space',
-      content: 'A secluded ceremony setting beneath towering trees, designed to feel intimate and transportive. The natural canopy creates a cathedral-like atmosphere, perfect for exchanging vows surrounded by mature redwoods.',
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
-      mapHighlight: 'Redwood Grove',
-    },
-    {
-      id: 'pavilion',
-      title: 'The Pavilion',
-      subtitle: 'Reception Space',
-      content: 'Open, airy, and elegant — ideal for a seamless transition from celebration to dinner and dancing. The pavilion\'s design allows natural light to flood the space while maintaining an intimate atmosphere.',
-      image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=80',
-      mapHighlight: 'The Pavilion',
-    },
-    {
-      id: 'lake',
-      title: 'The Lake',
-      subtitle: 'Photo Location',
-      content: 'A calm visual anchor on the property with reflective light, layered landscape, and cinematic atmosphere. The lake provides stunning backdrops for photography and moments of quiet reflection.',
-      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1800&q=80',
-      mapHighlight: 'The Lake',
-    },
-  ];
+interface CategoryDef {
+    id: Category;
+    label: string;
+    icon: string;
+    color: string;
+    colorMuted: string;
+    description: string;
+}
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (scrollContainerRef.current) {
-        const scrollTop = scrollContainerRef.current.scrollTop;
-        const scrollHeight = scrollContainerRef.current.scrollHeight - scrollContainerRef.current.clientHeight;
-        const progress = (scrollTop / scrollHeight) * 100;
-        setScrollProgress(progress);
+const CATEGORIES: CategoryDef[] = [
+    { id: 'venues', label: 'Event Venues', icon: '◇', color: '#D4A574', colorMuted: '#D4A57440', description: 'Ceremony & reception spaces' },
+    { id: 'stay', label: 'Accommodations', icon: '⌂', color: '#A4845E', colorMuted: '#A4845E40', description: 'Cottages & lodging' },
+    { id: 'dining', label: 'Dine & Drink', icon: '◦', color: '#C4956A', colorMuted: '#C4956A40', description: 'Restaurants, bars & markets' },
+    { id: 'wellness', label: 'Wellness & Play', icon: '○', color: '#7AADA0', colorMuted: '#7AADA040', description: 'Pools, spa & recreation' },
+    { id: 'services', label: 'Services', icon: '·', color: '#8A9A92', colorMuted: '#8A9A9240', description: 'Parking, lobby & offices' },
+];
 
-        // Update active section based on scroll
-        const sectionHeight = scrollHeight / exploreSections.length;
-        const currentSection = Math.min(Math.floor(scrollTop / sectionHeight), exploreSections.length - 1);
-        setActiveSection(currentSection);
-      }
+const CATEGORY_MAP: Record<Category, string> = {
+    venues: '#D4A574',
+    stay: '#A4845E',
+    dining: '#C4956A',
+    wellness: '#7AADA0',
+    services: '#8A9A92',
+};
+
+/* ================================================================== */
+/*  LOCATION DATA — 34 pins, categorized                               */
+/* ================================================================== */
+interface MapLocation {
+    name: string;
+    shortName: string;
+    x: number;
+    y: number;
+    category: Category;
+    description?: string;
+    capacity?: string;
+    nearbyIds?: number[];
+}
+
+const LOCATIONS: MapLocation[] = [
+    // VENUES (7)
+    { name: 'The Barn', shortName: 'Barn', x: 0.59, y: 0.57, category: 'venues', description: 'Rustic elegance beneath vaulted timber ceilings. Seats up to 300.', capacity: '300' },
+    { name: 'The Pavilion', shortName: 'Pavilion', x: 0.51, y: 0.69, category: 'venues', description: 'Open-air grandeur beside the creek. The signature reception space.', capacity: '400' },
+    { name: 'The Oak Room', shortName: 'Oak Room', x: 0.64, y: 0.44, category: 'venues', description: 'Intimate garden setting framed by heritage oaks.', capacity: '150' },
+    { name: 'The Redwood Room', shortName: 'Redwood', x: 0.77, y: 0.13, category: 'venues', description: 'Cathedral-scale redwood hall for grand celebrations.', capacity: '250' },
+    { name: 'The Grove', shortName: 'Grove', x: 0.38, y: 0.59, category: 'venues', description: 'Shaded ceremony meadow under a living canopy.', capacity: '200' },
+    { name: 'The Meadows', shortName: 'Meadows', x: 0.68, y: 0.52, category: 'venues', description: 'Sweeping hillside lawn with mountain views.', capacity: '500' },
+    { name: 'The North 40', shortName: 'North 40', x: 0.39, y: 0.72, category: 'venues', description: 'Expansive outdoor space for festivals and large gatherings.', capacity: '800' },
+
+    // STAY (7)
+    { name: 'Falling Oaks Cottages', shortName: 'Falling Oaks', x: 0.28, y: 0.46, category: 'stay', description: 'Secluded woodland cottages with private porches.' },
+    { name: 'Butterfly Lane Cottage', shortName: 'Butterfly Ln', x: 0.35, y: 0.44, category: 'stay', description: 'Garden-view cottage along the butterfly corridor.' },
+    { name: 'Sunset Meadows Cottages', shortName: 'Sunset Mdws', x: 0.36, y: 0.56, category: 'stay', description: 'West-facing suites with golden-hour views.' },
+    { name: 'Pavilion Cottage Suites', shortName: 'Pavilion Cts', x: 0.43, y: 0.80, category: 'stay', description: 'Premium suites steps from the main pavilion.' },
+    { name: 'Calamigos Camper', shortName: 'Camper', x: 0.74, y: 0.33, category: 'stay', description: 'Members-only glamping lodge with campfire terrace.' },
+    { name: 'The Red Cottage', shortName: 'Red Cottage', x: 0.61, y: 0.51, category: 'stay', description: 'The original ranch cottage, fully restored.' },
+    { name: 'Tree House', shortName: 'Tree House', x: 0.62, y: 0.57, category: 'stay', description: 'Elevated retreat with canopy views. Barbershop on ground floor.' },
+
+    // DINING (4)
+    { name: 'Members Clubhouse & Pizza Bar', shortName: 'Clubhouse', x: 0.22, y: 0.44, category: 'dining', description: 'Wood-fired pizza and craft cocktails for members.' },
+    { name: 'The House Bar', shortName: 'House Bar', x: 0.51, y: 0.36, category: 'dining', description: 'Ranch signature cocktails in a midcentury lounge.' },
+    { name: 'Gentry Market', shortName: 'Market', x: 0.57, y: 0.46, category: 'dining', description: 'Artisan provisions, coffee, and grab-and-go bites.' },
+    { name: 'BOOTHILL Little Shop', shortName: 'Boothill', x: 0.72, y: 0.38, category: 'dining', description: 'Ranch merchandise and curated gifts.' },
+
+    // WELLNESS & PLAY (9)
+    { name: 'Spa Calamigos', shortName: 'Spa', x: 0.58, y: 0.38, category: 'wellness', description: 'Full-service spa with canyon-view treatment rooms.' },
+    { name: 'Resort Pool & Pickleball', shortName: 'Resort Pool', x: 0.49, y: 0.41, category: 'wellness', description: 'Main resort pool with lounge deck and courts.' },
+    { name: 'Members Pool & Studio', shortName: 'Members Pool', x: 0.24, y: 0.56, category: 'wellness', description: 'Private pool with yoga studio and sun deck.' },
+    { name: 'Pavilion Pool', shortName: 'Pvln Pool', x: 0.37, y: 0.83, category: 'wellness', description: 'Adults-only infinity pool with mountain backdrop.' },
+    { name: 'Estate Pool', shortName: 'Estate Pool', x: 0.77, y: 0.22, category: 'wellness', description: 'Hillside pool with panoramic canyon views.' },
+    { name: 'The Beach Club', shortName: 'Beach Club', x: 0.62, y: 0.08, category: 'wellness', description: 'Sandy oasis with cabanas and a swim-up bar.' },
+    { name: 'Ferris Wheel', shortName: 'Ferris Whl', x: 0.54, y: 0.78, category: 'wellness', description: 'Iconic ranch landmark with evening light shows.' },
+    { name: 'Stables', shortName: 'Stables', x: 0.09, y: 0.44, category: 'wellness', description: 'Equestrian center with guided trail rides.' },
+    { name: 'The Vineyards', shortName: 'Vineyards', x: 0.13, y: 0.41, category: 'wellness', description: 'Estate vineyard with seasonal tasting events.' },
+
+    // SERVICES (7)
+    { name: 'Lobby & Valet', shortName: 'Lobby', x: 0.18, y: 0.53, category: 'services', description: 'Main entrance with concierge and valet parking.' },
+    { name: 'Events Office', shortName: 'Events', x: 0.72, y: 0.21, category: 'services', description: 'Event coordination and planning office.' },
+    { name: 'Star C / Ranch Club Lot', shortName: 'Ranch Lot', x: 0.64, y: 0.32, category: 'services', description: 'Primary guest parking area.' },
+    { name: 'Pavilion Lot', shortName: 'Pvln Lot', x: 0.35, y: 0.77, category: 'services', description: 'Parking for pavilion and cottage guests.' },
+    { name: 'North 40 Lot', shortName: 'N40 Lot', x: 0.19, y: 0.79, category: 'services', description: 'Overflow and event parking.' },
+    { name: 'Pavilion & Cottages Area', shortName: 'Cottage Area', x: 0.61, y: 0.74, category: 'services', description: 'Cottage check-in and guest services hub.' },
+    { name: 'VARIANT3D Office', shortName: 'V3D', x: 0.57, y: 0.52, category: 'services', description: 'Creative technology studio.' },
+];
+
+/* ================================================================== */
+/*  DISTANCE HELPERS                                                   */
+/* ================================================================== */
+function distanceBetween(a: MapLocation, b: MapLocation): number {
+    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+}
+
+function getNearby(loc: MapLocation, count: number = 5, filterCats?: Category[]): { location: MapLocation; distance: number; index: number }[] {
+    return LOCATIONS
+        .map((l, i) => ({ location: l, distance: distanceBetween(loc, l), index: i }))
+        .filter(r => r.location.name !== loc.name && (!filterCats || filterCats.includes(r.location.category)))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, count);
+}
+
+function distanceToWalkTime(d: number): string {
+    const minutes = Math.round(d * 25); // rough scale: 1.0 = ~25 min
+    if (minutes <= 1) return '< 1 min';
+    return `${minutes} min walk`;
+}
+
+/* ================================================================== */
+/*  TOPOGRAPHIC SVG BACKGROUND                                         */
+/* ================================================================== */
+function TopographicContours({ opacity = 0.08 }: { opacity?: number }) {
+    return (
+        <svg
+            viewBox="0 0 1000 700"
+            fill="none"
+            className="absolute inset-0 w-full h-full"
+            preserveAspectRatio="xMidYMid slice"
+            style={{ opacity }}
+        >
+            {/* Outer contours — large terrain features */}
+            <path d="M-50 350 C100 280, 200 200, 350 220 S550 300, 650 250 S800 180, 950 220 L1050 220" stroke={C.sage} strokeWidth="0.8" fill="none" />
+            <path d="M-30 380 C80 320, 180 250, 320 260 S520 330, 620 290 S780 220, 930 250 L1050 250" stroke={C.sage} strokeWidth="0.8" fill="none" />
+            <path d="M-60 420 C60 370, 160 300, 300 310 S490 370, 600 340 S760 270, 920 290 L1050 290" stroke={C.sage} strokeWidth="0.8" fill="none" />
+
+            {/* Ridge system — upper right */}
+            <path d="M500 50 C550 80, 620 60, 700 90 S820 120, 900 80 L1050 100" stroke={C.sage} strokeWidth="0.6" fill="none" />
+            <path d="M520 80 C560 105, 630 90, 710 115 S830 140, 910 110 L1050 125" stroke={C.sage} strokeWidth="0.6" fill="none" />
+            <path d="M540 110 C575 130, 640 120, 720 140 S840 160, 920 140 L1050 150" stroke={C.sage} strokeWidth="0.6" fill="none" />
+
+            {/* Valley — left side */}
+            <path d="M-50 200 C30 180, 100 160, 180 190 S280 240, 340 210 S420 170, 480 200" stroke={C.sage} strokeWidth="0.6" fill="none" />
+            <path d="M-40 230 C40 215, 110 195, 190 220 S290 260, 350 235 S430 200, 490 225" stroke={C.sage} strokeWidth="0.6" fill="none" />
+            <path d="M-30 260 C50 250, 120 235, 200 255 S300 280, 360 260 S440 235, 500 255" stroke={C.sage} strokeWidth="0.6" fill="none" />
+
+            {/* Canyon contours — center/bottom */}
+            <path d="M200 480 C280 450, 360 420, 440 440 S560 490, 640 460 S740 430, 820 450" stroke={C.sage} strokeWidth="0.7" fill="none" />
+            <path d="M180 510 C260 485, 340 460, 420 475 S540 515, 620 490 S720 465, 800 480" stroke={C.sage} strokeWidth="0.7" fill="none" />
+            <path d="M160 540 C240 520, 320 500, 400 510 S520 540, 600 520 S700 500, 780 510" stroke={C.sage} strokeWidth="0.7" fill="none" />
+            <path d="M140 570 C220 555, 300 540, 380 548 S500 565, 580 550 S680 535, 760 545" stroke={C.sage} strokeWidth="0.7" fill="none" />
+
+            {/* Creek path — flowing through center */}
+            <path d="M100 600 C180 560, 260 530, 340 520 S450 510, 530 490 S650 460, 750 440 S860 410, 950 380" stroke={C.sage} strokeWidth="1" fill="none" strokeDasharray="8 6" />
+
+            {/* Hilltop rings — upper left */}
+            <path d="M80 120 C100 100, 140 95, 160 110 S180 140, 160 155 S120 160, 100 145 S75 130, 80 120Z" stroke={C.sage} strokeWidth="0.5" fill="none" />
+            <path d="M90 125 C105 110, 135 106, 150 118 S165 140, 150 150 S125 153, 110 143 S85 133, 90 125Z" stroke={C.sage} strokeWidth="0.5" fill="none" />
+
+            {/* Hilltop rings — right center */}
+            <path d="M700 300 C730 275, 780 270, 810 290 S830 330, 805 345 S760 350, 730 335 S690 315, 700 300Z" stroke={C.sage} strokeWidth="0.5" fill="none" />
+            <path d="M715 305 C738 285, 775 280, 800 296 S816 325, 796 337 S756 340, 735 328 S706 314, 715 305Z" stroke={C.sage} strokeWidth="0.5" fill="none" />
+
+            {/* Scatter contours — lower right */}
+            <path d="M600 580 C650 560, 720 550, 780 570 S860 610, 920 590 L1050 600" stroke={C.sage} strokeWidth="0.5" fill="none" />
+            <path d="M620 610 C665 595, 730 585, 790 600 S870 630, 930 615 L1050 625" stroke={C.sage} strokeWidth="0.5" fill="none" />
+            <path d="M640 640 C680 628, 740 620, 800 632 S880 650, 940 640 L1050 648" stroke={C.sage} strokeWidth="0.5" fill="none" />
+        </svg>
+    );
+}
+
+/* ================================================================== */
+/*  MAP PIN COMPONENT                                                  */
+/* ================================================================== */
+interface PinProps {
+    location: MapLocation;
+    index: number;
+    isSelected: boolean;
+    isHighlighted: boolean;
+    isDimmed: boolean;
+    isNearby: boolean;
+    onClick: (index: number) => void;
+}
+
+function MapPin({ location, index, isSelected, isHighlighted, isDimmed, isNearby, onClick }: PinProps) {
+    const cat = CATEGORIES.find(c => c.id === location.category)!;
+    const pinColor = cat.color;
+
+    return (
+        <motion.button
+            className="absolute -translate-x-1/2 -translate-y-1/2 group z-10"
+            style={{ left: `${location.x * 100}%`, top: `${location.y * 100}%` }}
+            onClick={() => onClick(index)}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+                scale: isSelected ? 1.3 : isDimmed ? 0.7 : 1,
+                opacity: isDimmed ? 0.2 : 1,
+            }}
+            whileHover={{ scale: isSelected ? 1.35 : 1.15 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        >
+            {/* Pulse ring for selected */}
+            {isSelected && (
+                <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{ border: `1.5px solid ${pinColor}` }}
+                    initial={{ scale: 1, opacity: 0.6 }}
+                    animate={{ scale: 2.5, opacity: 0 }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+                />
+            )}
+
+            {/* Nearby indicator ring */}
+            {isNearby && !isSelected && (
+                <motion.div
+                    className="absolute inset-[-3px] rounded-full"
+                    style={{ border: `1px dashed ${pinColor}60` }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                />
+            )}
+
+            {/* Pin dot */}
+            <div
+                className="w-3 h-3 rounded-full relative transition-shadow duration-300"
+                style={{
+                    background: pinColor,
+                    boxShadow: isSelected
+                        ? `0 0 0 3px ${C.groveDark}, 0 0 12px ${pinColor}60`
+                        : isHighlighted
+                            ? `0 0 0 2px ${C.groveDark}, 0 0 6px ${pinColor}40`
+                            : `0 0 0 1.5px ${C.groveDark}`,
+                }}
+            />
+
+            {/* Label — show on hover or when selected */}
+            <div
+                className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap transition-all duration-200 pointer-events-none ${
+                    isSelected ? 'opacity-100 -top-7' : 'opacity-0 group-hover:opacity-100 -top-6'
+                }`}
+            >
+                <span
+                    className="text-[10px] tracking-[0.1em] uppercase px-2 py-0.5 rounded-sm"
+                    style={{
+                        fontFamily: body,
+                        color: C.cream,
+                        background: `${C.groveDark}E0`,
+                        backdropFilter: 'blur(4px)',
+                    }}
+                >
+                    {location.shortName}
+                </span>
+            </div>
+        </motion.button>
+    );
+}
+
+/* ================================================================== */
+/*  PATH CONNECTOR — SVG line between two points                       */
+/* ================================================================== */
+function PathConnector({ from, to, color, delay = 0 }: { from: MapLocation; to: MapLocation; color: string; delay?: number }) {
+    const pathRef = useRef<SVGPathElement>(null);
+
+    useEffect(() => {
+        if (!pathRef.current) return;
+        const length = pathRef.current.getTotalLength();
+        gsap.set(pathRef.current, { strokeDasharray: length, strokeDashoffset: length });
+        gsap.to(pathRef.current, { strokeDashoffset: 0, duration: 0.6, delay, ease: 'power2.inOut' });
+    }, [from, to, delay]);
+
+    // Create a slight curve between the two points
+    const mx = (from.x + to.x) / 2;
+    const my = (from.y + to.y) / 2;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    // Perpendicular offset for curve
+    const offset = Math.min(0.04, distanceBetween(from, to) * 0.3);
+    const cx = mx - dy * offset * 3;
+    const cy = my + dx * offset * 3;
+
+    return (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[5]" preserveAspectRatio="none">
+            <path
+                ref={pathRef}
+                d={`M ${from.x * 100}% ${from.y * 100}% Q ${cx * 100}% ${cy * 100}% ${to.x * 100}% ${to.y * 100}%`}
+                stroke={color}
+                strokeWidth="1"
+                strokeDasharray="4 3"
+                fill="none"
+                opacity="0.5"
+                vectorEffect="non-scaling-stroke"
+            />
+        </svg>
+    );
+}
+
+/* ================================================================== */
+/*  CATEGORY FILTER — Accordion variant                                */
+/* ================================================================== */
+function CategoryAccordion({ activeCategories, onToggle }: { activeCategories: Set<Category>; onToggle: (cat: Category) => void }) {
+    const [expandedCat, setExpandedCat] = useState<Category | null>(null);
+
+    return (
+        <div className="space-y-1">
+            {CATEGORIES.map(cat => {
+                const isActive = activeCategories.has(cat.id);
+                const isExpanded = expandedCat === cat.id;
+                const count = LOCATIONS.filter(l => l.category === cat.id).length;
+
+                return (
+                    <div key={cat.id}>
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm transition-all duration-200 text-left"
+                            style={{
+                                background: isActive ? `${cat.color}12` : 'transparent',
+                                borderLeft: `2px solid ${isActive ? cat.color : 'transparent'}`,
+                            }}
+                            onClick={() => {
+                                onToggle(cat.id);
+                                setExpandedCat(isExpanded ? null : cat.id);
+                            }}
+                        >
+                            <span style={{ color: cat.color, fontSize: '14px' }}>{cat.icon}</span>
+                            <span
+                                className="flex-1 text-xs tracking-[0.12em] uppercase"
+                                style={{ fontFamily: body, color: isActive ? C.cream : C.sage }}
+                            >
+                                {cat.label}
+                            </span>
+                            <span
+                                className="text-[10px] tabular-nums"
+                                style={{ fontFamily: mono, color: isActive ? cat.color : `${C.sage}60` }}
+                            >
+                                {count}
+                            </span>
+                        </button>
+
+                        <AnimatePresence>
+                            {isExpanded && isActive && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="pl-8 pr-3 pb-2 space-y-0.5">
+                                        {LOCATIONS.filter(l => l.category === cat.id).map((loc, i) => (
+                                            <div
+                                                key={i}
+                                                className="text-[11px] py-1 flex items-center gap-2"
+                                                style={{ fontFamily: body, color: `${C.sage}AA` }}
+                                            >
+                                                <span className="w-1 h-1 rounded-full" style={{ background: cat.color, opacity: 0.5 }} />
+                                                {loc.shortName}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+/* ================================================================== */
+/*  CATEGORY FILTER — Toggle Switch variant                            */
+/* ================================================================== */
+function CategoryToggles({ activeCategories, onToggle }: { activeCategories: Set<Category>; onToggle: (cat: Category) => void }) {
+    return (
+        <div className="space-y-2">
+            {CATEGORIES.map(cat => {
+                const isActive = activeCategories.has(cat.id);
+                const count = LOCATIONS.filter(l => l.category === cat.id).length;
+
+                return (
+                    <button
+                        key={cat.id}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-sm transition-all duration-200"
+                        onClick={() => onToggle(cat.id)}
+                    >
+                        <span style={{ color: isActive ? cat.color : `${C.sage}50`, fontSize: '13px' }}>{cat.icon}</span>
+                        <span
+                            className="flex-1 text-xs tracking-[0.1em] uppercase text-left"
+                            style={{ fontFamily: body, color: isActive ? C.cream : `${C.sage}50` }}
+                        >
+                            {cat.label}
+                        </span>
+
+                        {/* Toggle switch */}
+                        <div
+                            className="w-8 h-[18px] rounded-full relative transition-colors duration-200 shrink-0"
+                            style={{ background: isActive ? `${cat.color}50` : `${C.sage}20` }}
+                        >
+                            <motion.div
+                                className="absolute top-[3px] w-3 h-3 rounded-full"
+                                style={{ background: isActive ? cat.color : C.sage }}
+                                animate={{ left: isActive ? '16px' : '3px' }}
+                                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                            />
+                        </div>
+
+                        <span
+                            className="text-[10px] w-5 text-right tabular-nums"
+                            style={{ fontFamily: mono, color: isActive ? cat.color : `${C.sage}40` }}
+                        >
+                            {count}
+                        </span>
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
+/* ================================================================== */
+/*  LOCATION DETAIL PANEL                                              */
+/* ================================================================== */
+function DetailPanel({ location, onClose }: { location: MapLocation; onClose: () => void }) {
+    const cat = CATEGORIES.find(c => c.id === location.category)!;
+    const nearby = useMemo(() => getNearby(location, 6), [location]);
+
+    // Group nearby by category for the proximity section
+    const nearbyByCategory = useMemo(() => {
+        const groups: Record<string, typeof nearby> = {};
+        nearby.forEach(n => {
+            const key = n.location.category;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(n);
+        });
+        return groups;
+    }, [nearby]);
+
+    return (
+        <motion.div
+            className="absolute right-0 top-0 bottom-0 w-full md:w-[380px] z-30 overflow-y-auto"
+            style={{
+                background: `${C.groveDark}F5`,
+                backdropFilter: 'blur(20px)',
+                borderLeft: `1px solid ${C.sage}15`,
+            }}
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+            {/* Close button */}
+            <button
+                onClick={onClose}
+                className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                style={{ background: `${C.sage}15` }}
+            >
+                <span style={{ color: C.sage, fontSize: '18px', lineHeight: 1 }}>×</span>
+            </button>
+
+            <div className="p-6 pt-14">
+                {/* Category badge */}
+                <div className="flex items-center gap-2 mb-4">
+                    <span
+                        className="text-[10px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm"
+                        style={{
+                            fontFamily: body,
+                            color: cat.color,
+                            background: `${cat.color}15`,
+                            border: `1px solid ${cat.color}25`,
+                        }}
+                    >
+                        {cat.icon} {cat.label}
+                    </span>
+                </div>
+
+                {/* Title */}
+                <h3
+                    className="text-3xl font-light leading-[1.1] mb-3"
+                    style={{ fontFamily: display, color: C.cream }}
+                >
+                    {location.name}
+                </h3>
+
+                {/* Description */}
+                {location.description && (
+                    <p
+                        className="text-sm leading-[1.7] mb-6"
+                        style={{ fontFamily: body, color: C.sage }}
+                    >
+                        {location.description}
+                    </p>
+                )}
+
+                {/* Capacity */}
+                {location.capacity && (
+                    <div
+                        className="flex items-center gap-3 px-4 py-3 rounded-sm mb-6"
+                        style={{ background: `${C.sage}10`, border: `1px solid ${C.sage}15` }}
+                    >
+                        <span className="text-xs tracking-[0.15em] uppercase" style={{ fontFamily: body, color: C.sage }}>
+                            Capacity
+                        </span>
+                        <span className="text-lg font-light ml-auto" style={{ fontFamily: display, color: C.cream }}>
+                            {location.capacity}
+                        </span>
+                    </div>
+                )}
+
+                {/* Divider */}
+                <div className="h-[1px] mb-6" style={{ background: `${C.sage}15` }} />
+
+                {/* Nearby */}
+                <div className="mb-4">
+                    <span
+                        className="text-[10px] tracking-[0.25em] uppercase"
+                        style={{ fontFamily: body, color: C.wood }}
+                    >
+                        Nearby
+                    </span>
+                </div>
+
+                <div className="space-y-2">
+                    {nearby.map((n, i) => {
+                        const nCat = CATEGORIES.find(c => c.id === n.location.category)!;
+                        return (
+                            <motion.div
+                                key={i}
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-sm"
+                                style={{ background: `${C.sage}08` }}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 + i * 0.05 }}
+                            >
+                                <span
+                                    className="w-2 h-2 rounded-full shrink-0"
+                                    style={{ background: nCat.color }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <span
+                                        className="text-xs block truncate"
+                                        style={{ fontFamily: body, color: C.cream }}
+                                    >
+                                        {n.location.shortName}
+                                    </span>
+                                    <span
+                                        className="text-[10px] block"
+                                        style={{ fontFamily: body, color: `${C.sage}80` }}
+                                    >
+                                        {nCat.label}
+                                    </span>
+                                </div>
+                                <span
+                                    className="text-[10px] tracking-[0.1em] shrink-0"
+                                    style={{ fontFamily: mono, color: nCat.color }}
+                                >
+                                    {distanceToWalkTime(n.distance)}
+                                </span>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+
+                {/* Proximity summary */}
+                <div className="mt-6 pt-6" style={{ borderTop: `1px solid ${C.sage}15` }}>
+                    <span
+                        className="text-[10px] tracking-[0.25em] uppercase block mb-3"
+                        style={{ fontFamily: body, color: C.wood }}
+                    >
+                        Closest by type
+                    </span>
+                    <div className="space-y-1.5">
+                        {CATEGORIES.filter(c => c.id !== location.category).map(c => {
+                            const nearest = getNearby(location, 1, [c.id]);
+                            if (nearest.length === 0) return null;
+                            return (
+                                <div key={c.id} className="flex items-center justify-between">
+                                    <span className="text-[11px]" style={{ fontFamily: body, color: `${C.sage}90` }}>
+                                        {c.icon} {c.label}
+                                    </span>
+                                    <span className="text-[10px]" style={{ fontFamily: mono, color: c.color }}>
+                                        {nearest[0].location.shortName} · {distanceToWalkTime(nearest[0].distance)}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+/* ================================================================== */
+/*  DEV DESIGN BOARDS NAV (minimal bottom bar)                         */
+/* ================================================================== */
+const devBoardPages = [
+    { id: 'motion', label: 'Motion', href: '/moodboard/motion' },
+    { id: 'fonts', label: 'Type', href: '/moodboard/fonts' },
+    { id: 'scrollytelling', label: 'Scroll', href: '/moodboard/scrollytelling' },
+    { id: 'animations', label: 'Interact', href: '/moodboard/animations' },
+    { id: 'vocabulary', label: 'Vocab', href: '/moodboard/vocabulary' },
+    { id: 'easing', label: 'Easing', href: '/moodboard/easing' },
+    { id: 'color', label: 'Color', href: '/moodboard/color' },
+    { id: 'scrollcraft', label: 'GSAP', href: '/moodboard/scrollcraft' },
+    { id: 'snapflow', label: 'Snap', href: '/moodboard/snapflow' },
+    { id: 'designs', label: 'Play', href: '/designs' },
+];
+
+function DevBoardsNav() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            {/* Floating bottom-right trigger */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="fixed bottom-4 right-4 z-[100] flex items-center gap-2 px-3 py-1.5 rounded-full transition-all"
+                style={{
+                    background: `${C.groveDark}CC`,
+                    backdropFilter: 'blur(8px)',
+                    border: `1px solid ${C.sage}20`,
+                }}
+            >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.sage }} />
+                <span
+                    className="text-[9px] tracking-[0.15em] uppercase"
+                    style={{ fontFamily: mono, color: C.sage }}
+                >
+                    {isOpen ? 'Close' : "Dave's Boards"}
+                </span>
+            </button>
+
+            {/* Expandable panel */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        className="fixed bottom-12 right-4 z-[99] p-4 rounded-sm"
+                        style={{
+                            background: `${C.groveDark}F0`,
+                            backdropFilter: 'blur(16px)',
+                            border: `1px solid ${C.sage}15`,
+                        }}
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <span
+                            className="block text-[9px] tracking-[0.2em] uppercase mb-3"
+                            style={{ fontFamily: mono, color: `${C.sage}60` }}
+                        >
+                            Dev Design Boards
+                        </span>
+                        <div className="grid grid-cols-2 gap-1" style={{ width: '240px' }}>
+                            {devBoardPages.map(page => (
+                                <a
+                                    key={page.id}
+                                    href={page.href}
+                                    className="text-[11px] px-2.5 py-1.5 rounded-sm transition-colors"
+                                    style={{
+                                        fontFamily: body,
+                                        color: C.sage,
+                                        background: `${C.sage}08`,
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = `${C.sage}18`;
+                                        e.currentTarget.style.color = C.cream;
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = `${C.sage}08`;
+                                        e.currentTarget.style.color = C.sage;
+                                    }}
+                                >
+                                    {page.label}
+                                </a>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    );
+}
+
+/* ================================================================== */
+/*  HERO SECTION                                                       */
+/* ================================================================== */
+function HeroSection() {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!ref.current) return;
+        const tl = gsap.timeline({ delay: 0.3 });
+
+        tl.fromTo(ref.current.querySelector('.hero-label'),
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 0.5, duration: 0.8, ease: 'power2.out' }
+        );
+        tl.fromTo(ref.current.querySelectorAll('.hero-word'),
+            { y: 80, opacity: 0, skewY: 5 },
+            { y: 0, opacity: 1, skewY: 0, duration: 1, stagger: 0.08, ease: 'power4.out' },
+            '-=0.5'
+        );
+        tl.fromTo(ref.current.querySelector('.hero-line'),
+            { scaleX: 0 },
+            { scaleX: 1, duration: 1.2, ease: 'power2.inOut' },
+            '-=0.6'
+        );
+        tl.fromTo(ref.current.querySelector('.hero-sub'),
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
+            '-=0.8'
+        );
+        tl.fromTo(ref.current.querySelector('.hero-cta'),
+            { y: 10, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' },
+            '-=0.4'
+        );
+    }, { scope: ref });
+
+    const scrollToMap = () => {
+        const mapEl = document.getElementById('venue-map');
+        if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const container = scrollContainerRef.current;
-
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
-  }, [exploreSections.length]);
-
-  const handleLocationSelect = (location: string) => {
-    setSelectedLocation(location);
-  };
-
-  const scrollToSection = (index: number) => {
-    if (scrollContainerRef.current) {
-      const sectionHeight = scrollContainerRef.current.scrollHeight / exploreSections.length;
-      scrollContainerRef.current.scrollTo({
-        top: index * sectionHeight,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  // Render different modes
-  if (currentMode === 'explore') {
     return (
-      <ExploreMode 
-        brand={brand}
-        exploreSections={exploreSections}
-        mapPins={mapPins}
-        activeSection={activeSection}
-        scrollProgress={scrollProgress}
-        scrollContainerRef={scrollContainerRef}
-        scrollToSection={scrollToSection}
-        setCurrentMode={setCurrentMode}
-      />
-    );
-  }
+        <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
+            <TopographicContours opacity={0.06} />
 
-  if (currentMode === 'navigate') {
+            {/* Horizontal accent line */}
+            <div
+                className="hero-line absolute left-0 right-0 origin-left"
+                style={{ top: '58%', height: '1px', background: `${C.sand}20` }}
+            />
+
+            <div className="relative z-10 text-center px-8 max-w-4xl">
+                <span
+                    className="hero-label block text-[10px] tracking-[0.4em] uppercase mb-8"
+                    style={{ fontFamily: mono, color: C.sage }}
+                >
+                    Interactive Venue Guide
+                </span>
+
+                <h1 className="overflow-hidden mb-6">
+                    {'Calamigos Ranch'.split(' ').map((word, i) => (
+                        <span
+                            key={i}
+                            className="hero-word inline-block text-[clamp(3rem,10vw,8rem)] font-light leading-[0.92] tracking-tight mx-[0.06em]"
+                            style={{ fontFamily: display, color: C.cream }}
+                        >
+                            {word}
+                        </span>
+                    ))}
+                </h1>
+
+                <p
+                    className="hero-sub text-base md:text-lg tracking-wide max-w-xl mx-auto leading-relaxed mb-10"
+                    style={{ fontFamily: body, color: C.sage }}
+                >
+                    A luxury digital property guide. Explore 34 spaces across the ranch —
+                    find your venue, discover what's nearby, and navigate with ease.
+                </p>
+
+                <button
+                    onClick={scrollToMap}
+                    className="hero-cta inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all group"
+                    style={{
+                        background: `${C.sage}15`,
+                        border: `1px solid ${C.sage}25`,
+                    }}
+                    onMouseEnter={e => {
+                        e.currentTarget.style.background = `${C.sage}25`;
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.background = `${C.sage}15`;
+                    }}
+                >
+                    <span
+                        className="text-xs tracking-[0.15em] uppercase"
+                        style={{ fontFamily: body, color: C.cream }}
+                    >
+                        Explore the map
+                    </span>
+                    <motion.span
+                        style={{ color: C.sage }}
+                        animate={{ y: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                        ↓
+                    </motion.span>
+                </button>
+            </div>
+        </section>
+    );
+}
+
+/* ================================================================== */
+/*  MAIN MAP SECTION                                                   */
+/* ================================================================== */
+function VenueMap() {
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [activeCategories, setActiveCategories] = useState<Set<Category>>(
+        new Set(CATEGORIES.map(c => c.id))
+    );
+    const [filterUI, setFilterUI] = useState<'accordion' | 'toggles'>('toggles');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+    const mapRef = useRef<HTMLDivElement>(null);
+    const [mapReady, setMapReady] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setMapReady(true), 300);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const selectedLocation = selectedIndex !== null ? LOCATIONS[selectedIndex] : null;
+
+    const nearbyLocations = useMemo(() => {
+        if (!selectedLocation) return [];
+        return getNearby(selectedLocation, 5);
+    }, [selectedLocation]);
+
+    const nearbyIndices = useMemo(
+        () => new Set(nearbyLocations.map(n => n.index)),
+        [nearbyLocations]
+    );
+
+    const handleToggleCategory = useCallback((cat: Category) => {
+        setActiveCategories(prev => {
+            const next = new Set(prev);
+            if (next.has(cat)) {
+                next.delete(cat);
+            } else {
+                next.add(cat);
+            }
+            return next;
+        });
+    }, []);
+
+    const handlePinClick = useCallback((index: number) => {
+        setSelectedIndex(prev => prev === index ? null : index);
+    }, []);
+
     return (
-      <NavigateMode 
-        brand={brand}
-        quickFind={quickFind}
-        mapPins={mapPins}
-        selectedLocation={selectedLocation}
-        handleLocationSelect={handleLocationSelect}
-        setCurrentMode={setCurrentMode}
-      />
-    );
-  }
-
-  // Home/Landing mode
-  return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: brand.sand,
-        color: brand.text,
-        fontFamily: 'Inter, Helvetica Neue, Helvetica, Arial, sans-serif',
-      }}
-    >
-      {/* Progress Bar for Explore Mode */}
-      {scrollProgress > 0 && (
-        <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-          <div
-            className="h-full transition-all duration-300"
-            style={{ 
-              width: `${scrollProgress}%`,
-              background: brand.green 
-            }}
-          />
-        </div>
-      )}
-
-      <header
-        className="sticky top-0 z-40 border-b backdrop-blur"
-        style={{
-          background: 'rgba(234, 228, 216, 0.88)',
-          borderColor: brand.divider,
-        }}
-      >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-          <div>
-            <div
-              className="text-xs uppercase tracking-[0.24em]"
-              style={{ color: brand.sage }}
-            >
-              Proposal Prototype
-            </div>
-            <div
-              className="text-lg md:text-xl"
-              style={{
-                fontFamily: 'Playfair Display, Georgia, serif',
-                letterSpacing: '0.02em',
-              }}
-            >
-              Calamigos Ranch — Explore & Navigate
-            </div>
-          </div>
-          <div className="hidden items-center gap-3 md:flex">
-            <button
-              onClick={() => setCurrentMode('navigate')}
-              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-              style={{ borderColor: brand.green, color: brand.green }}
-            >
-              Find Your Way
-            </button>
-            <button
-              onClick={() => setCurrentMode('explore')}
-              className="rounded-full px-5 py-2.5 text-sm text-white shadow-sm transition-all hover:shadow-lg"
-              style={{ background: brand.green }}
-            >
-              Explore the Ranch
-            </button>
-            <a
-              href="/designs"
-              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
-              style={{ borderColor: brand.sage, color: brand.sage }}
-            >
-              Designs
-            </a>
-            <div className="relative group">
-              <button
-                className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
-                style={{ borderColor: brand.sage, color: brand.sage }}
-              >
-                Moodboards
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <a
-                  href="/moodboard/motion"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        <section id="venue-map" className="relative min-h-screen py-16 md:py-24">
+            {/* Section header */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12">
+                <span
+                    className="block text-[10px] tracking-[0.3em] uppercase mb-3"
+                    style={{ fontFamily: body, color: C.sage }}
                 >
-                  Motion Animations
-                </a>
-                <a
-                  href="/moodboard/fonts"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    Property Map
+                </span>
+                <h2
+                    className="text-4xl md:text-5xl font-light leading-[1.05] mb-4"
+                    style={{ fontFamily: display, color: C.cream }}
                 >
-                  Google Fonts
-                </a>
-                <a
-                  href="/moodboard/scrollytelling"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    Explore the Ranch
+                </h2>
+                <p
+                    className="text-sm max-w-xl leading-relaxed"
+                    style={{ fontFamily: body, color: C.sage }}
                 >
-                  Scrollytelling
-                </a>
-                <a
-                  href="/moodboard/animations"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                >
-                  Design Animations
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Hero Section */}
-      <section className="mx-auto max-w-7xl px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-10">
-        <motion.div 
-          className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <motion.div
-            className="overflow-hidden rounded-[20px] border"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.7 }}
-          >
-            <div className="relative aspect-[16/10] overflow-hidden">
-              <motion.img
-                src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1800&q=80"
-                alt="Cinematic aerial landscape placeholder"
-                className="h-full w-full object-cover"
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-              />
-              <motion.div 
-                className="absolute bottom-0 left-0 right-0 p-6 md:p-8"
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-              >
-                <div className="mb-3 text-xs uppercase tracking-[0.24em] text-white/80">
-                  Hybrid concept
-                </div>
-                <motion.h1
-                  className="max-w-3xl text-4xl leading-tight text-white md:text-6xl"
-                  style={{
-                    fontFamily: 'Playfair Display, Georgia, serif',
-                    letterSpacing: '0.02em',
-                  }}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.9, duration: 0.7 }}
-                >
-                  A cinematic property guide with real wayfinding utility.
-                </motion.h1>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="flex flex-col justify-between rounded-[18px] border p-6 md:p-8"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.7 }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-            >
-              <div className="mb-3 text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-                Product framing
-              </div>
-              <motion.h2
-                className="text-3xl leading-tight md:text-4xl"
-                style={{
-                  fontFamily: 'Playfair Display, Georgia, serif',
-                  letterSpacing: '0.02em',
-                }}
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-              >
-                One destination. Two clear guest modes.
-              </motion.h2>
-              <motion.p 
-                className="mt-4 max-w-xl text-[15px] leading-7 md:text-[17px]"
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-              >
-                Prospective visitors can explore the property through beautiful editorial storytelling.
-                Guests already on-site can skip straight to a map-first interface to find venues,
-                restrooms, parking, and services without friction.
-              </motion.p>
-            </motion.div>
-
-            <motion.div 
-              className="mt-8 grid gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-            >
-              <motion.div
-                className="rounded-[18px] border p-5"
-                style={{ borderColor: brand.divider, background: '#EFE9DD' }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-              >
-                <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
-                  Mode 01
-                </div>
-                <div
-                  className="mt-2 text-2xl"
-                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                >
-                  Explore the Ranch
-                </div>
-                <p className="mt-2 text-sm leading-6">
-                  Cinematic sections, venue highlights, atmosphere, and orientation tied back to the property map.
+                    Select a location to see details and discover what's nearby.
+                    Use the category filters to focus on what matters to you.
                 </p>
-              </motion.div>
-              <motion.div
-                className="rounded-[18px] border p-5"
-                style={{ borderColor: brand.divider, background: '#EFE9DD' }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-              >
-                <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
-                  Mode 02
-                </div>
-                <div
-                  className="mt-2 text-2xl"
-                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                >
-                  Find Your Way
-                </div>
-                <p className="mt-2 text-sm leading-6">
-                  Quick-access essentials with a mobile-first map, location cards, and fast paths for common needs.
-                </p>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-              Entry screen concept
             </div>
-            <h2
-              className="mt-2 text-3xl md:text-5xl"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}
-            >
-              Let the user choose their intent immediately.
-            </h2>
-          </div>
-        </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div
-            className="group overflow-hidden rounded-[20px] border"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-          >
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80"
-                alt="Editorial venue imagery placeholder"
-                className="h-full w-full object-cover transition duration-700 ease-in-out group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <div className="text-xs uppercase tracking-[0.22em] text-white/80">Inspiration</div>
-                <div className="mt-2 text-3xl" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                  Explore the Ranch
-                </div>
-              </div>
-            </div>
-            <div className="p-6">
-              <p className="text-[15px] leading-7">
-                Ideal for prospective guests, couples, planners, and anyone wanting to understand the feeling and scale of the property.
-              </p>
-              <button
-                className="mt-5 rounded-full px-6 py-3 text-sm font-medium text-white"
-                style={{ background: brand.green }}
-              >
-                Start Cinematic Tour
-              </button>
-            </div>
-          </div>
+            <div className="max-w-7xl mx-auto px-6 md:px-12">
+                <div className="flex gap-6 relative">
+                    {/* LEFT SIDEBAR — Category filters */}
+                    <div className="hidden lg:block w-[220px] shrink-0">
+                        {/* Filter UI switcher */}
+                        <div className="flex items-center gap-2 mb-4">
+                            <span
+                                className="text-[9px] tracking-[0.2em] uppercase"
+                                style={{ fontFamily: mono, color: `${C.sage}60` }}
+                            >
+                                Filter
+                            </span>
+                            <div className="flex-1" />
+                            {(['toggles', 'accordion'] as const).map(ui => (
+                                <button
+                                    key={ui}
+                                    className="text-[9px] tracking-[0.1em] uppercase px-2 py-0.5 rounded-sm transition-colors"
+                                    style={{
+                                        fontFamily: mono,
+                                        color: filterUI === ui ? C.cream : `${C.sage}50`,
+                                        background: filterUI === ui ? `${C.sage}15` : 'transparent',
+                                    }}
+                                    onClick={() => setFilterUI(ui)}
+                                >
+                                    {ui}
+                                </button>
+                            ))}
+                        </div>
 
-          <div
-            className="group overflow-hidden rounded-[20px] border"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-          >
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'radial-gradient(circle at 30% 35%, rgba(122,143,130,0.26), transparent 20%), radial-gradient(circle at 70% 62%, rgba(47,74,63,0.22), transparent 18%), linear-gradient(180deg, #F5F2EA 0%, #EAE4D8 100%)',
-                }}
-              />
-              <div className="absolute inset-0 p-6">
-                <div className="grid h-full grid-cols-8 grid-rows-6 gap-2 opacity-90">
-                  {Array.from({ length: 48 }).map((_, i) => (
+                        {/* Show/hide all */}
+                        <div className="flex gap-2 mb-4">
+                            <button
+                                className="text-[9px] tracking-[0.1em] uppercase px-2 py-1 rounded-sm transition-colors"
+                                style={{ fontFamily: mono, color: C.sage, background: `${C.sage}10` }}
+                                onClick={() => setActiveCategories(new Set(CATEGORIES.map(c => c.id)))}
+                            >
+                                All on
+                            </button>
+                            <button
+                                className="text-[9px] tracking-[0.1em] uppercase px-2 py-1 rounded-sm transition-colors"
+                                style={{ fontFamily: mono, color: C.sage, background: `${C.sage}10` }}
+                                onClick={() => setActiveCategories(new Set())}
+                            >
+                                All off
+                            </button>
+                        </div>
+
+                        {filterUI === 'accordion' ? (
+                            <CategoryAccordion activeCategories={activeCategories} onToggle={handleToggleCategory} />
+                        ) : (
+                            <CategoryToggles activeCategories={activeCategories} onToggle={handleToggleCategory} />
+                        )}
+
+                        {/* Legend */}
+                        <div className="mt-8 pt-4" style={{ borderTop: `1px solid ${C.sage}15` }}>
+                            <span
+                                className="text-[9px] tracking-[0.2em] uppercase block mb-3"
+                                style={{ fontFamily: mono, color: `${C.sage}40` }}
+                            >
+                                {LOCATIONS.filter(l => activeCategories.has(l.category)).length} / {LOCATIONS.length} visible
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* MAP CONTAINER */}
                     <div
-                      key={i}
-                      className="rounded-md border"
-                      style={{ borderColor: 'rgba(122,143,130,0.18)' }}
-                    />
-                  ))}
+                        ref={mapRef}
+                        className="flex-1 relative rounded-sm overflow-hidden"
+                        style={{
+                            aspectRatio: '10 / 7',
+                            background: C.grove,
+                            border: `1px solid ${C.sage}15`,
+                        }}
+                    >
+                        {/* Topographic background */}
+                        <TopographicContours opacity={0.1} />
+
+                        {/* Grid overlay */}
+                        <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.03 }}>
+                            {[...Array(10)].map((_, i) => (
+                                <div
+                                    key={`v${i}`}
+                                    className="absolute top-0 bottom-0"
+                                    style={{ left: `${(i + 1) * 10}%`, width: '1px', background: C.sage }}
+                                />
+                            ))}
+                            {[...Array(7)].map((_, i) => (
+                                <div
+                                    key={`h${i}`}
+                                    className="absolute left-0 right-0"
+                                    style={{ top: `${(i + 1) * 14.28}%`, height: '1px', background: C.sage }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Path connectors for selected location */}
+                        <AnimatePresence>
+                            {selectedLocation && nearbyLocations.map((n, i) => (
+                                <PathConnector
+                                    key={`${selectedIndex}-${n.index}`}
+                                    from={selectedLocation}
+                                    to={n.location}
+                                    color={CATEGORY_MAP[n.location.category]}
+                                    delay={i * 0.08}
+                                />
+                            ))}
+                        </AnimatePresence>
+
+                        {/* Pins */}
+                        {mapReady && LOCATIONS.map((loc, i) => {
+                            const isVisible = activeCategories.has(loc.category);
+                            if (!isVisible) return null;
+
+                            return (
+                                <MapPin
+                                    key={i}
+                                    location={loc}
+                                    index={i}
+                                    isSelected={selectedIndex === i}
+                                    isHighlighted={nearbyIndices.has(i)}
+                                    isDimmed={selectedIndex !== null && selectedIndex !== i && !nearbyIndices.has(i)}
+                                    isNearby={nearbyIndices.has(i)}
+                                    onClick={handlePinClick}
+                                />
+                            );
+                        })}
+
+                        {/* Detail panel overlay */}
+                        <AnimatePresence>
+                            {selectedLocation && (
+                                <DetailPanel
+                                    location={selectedLocation}
+                                    onClose={() => setSelectedIndex(null)}
+                                />
+                            )}
+                        </AnimatePresence>
+
+                        {/* Empty state */}
+                        {activeCategories.size === 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <p
+                                    className="text-sm tracking-[0.1em]"
+                                    style={{ fontFamily: body, color: `${C.sage}60` }}
+                                >
+                                    Enable a category to see locations
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-              </div>
-              {mapPins.slice(0, 5).map((pin) => (
-                <div
-                  key={pin.name}
-                  className="absolute -translate-x-1/2 -translate-y-1/2"
-                  style={{ left: pin.x, top: pin.y }}
+
+                {/* Mobile category pills (visible on small screens) */}
+                <div className="lg:hidden mt-4 flex flex-wrap gap-2">
+                    {CATEGORIES.map(cat => {
+                        const isActive = activeCategories.has(cat.id);
+                        return (
+                            <button
+                                key={cat.id}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] tracking-[0.08em] uppercase transition-all"
+                                style={{
+                                    fontFamily: body,
+                                    background: isActive ? `${cat.color}20` : `${C.sage}10`,
+                                    color: isActive ? cat.color : `${C.sage}60`,
+                                    border: `1px solid ${isActive ? cat.color + '30' : 'transparent'}`,
+                                }}
+                                onClick={() => handleToggleCategory(cat.id)}
+                            >
+                                <span>{cat.icon}</span>
+                                {cat.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/* ================================================================== */
+/*  STATS BAR                                                          */
+/* ================================================================== */
+function StatsBar() {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!ref.current) return;
+        gsap.fromTo(
+            ref.current.querySelectorAll('.stat-item'),
+            { y: 30, opacity: 0 },
+            {
+                y: 0,
+                opacity: 1,
+                stagger: 0.08,
+                duration: 0.7,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: ref.current, start: 'top 85%' },
+            },
+        );
+    }, { scope: ref });
+
+    const stats = [
+        { value: '34', label: 'Locations' },
+        { value: '7', label: 'Event Venues' },
+        { value: '7', label: 'Cottage Suites' },
+        { value: '5', label: 'Pools' },
+        { value: '220', label: 'Acres' },
+    ];
+
+    return (
+        <section ref={ref} className="py-20">
+            <div className="max-w-5xl mx-auto px-6 md:px-12">
+                <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+                    {stats.map((s, i) => (
+                        <div key={i} className="stat-item text-center">
+                            <span
+                                className="block text-3xl md:text-4xl font-light mb-1"
+                                style={{ fontFamily: display, color: C.cream }}
+                            >
+                                {s.value}
+                            </span>
+                            <span
+                                className="text-[10px] tracking-[0.2em] uppercase"
+                                style={{ fontFamily: body, color: C.sage }}
+                            >
+                                {s.label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/* ================================================================== */
+/*  CONCEPT SECTION                                                    */
+/* ================================================================== */
+function ConceptSection() {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!ref.current) return;
+        gsap.fromTo(
+            ref.current.querySelectorAll('[data-reveal]'),
+            { y: 40, opacity: 0 },
+            {
+                y: 0,
+                opacity: 1,
+                stagger: 0.1,
+                duration: 0.8,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: ref.current, start: 'top 75%' },
+            },
+        );
+    }, { scope: ref });
+
+    return (
+        <section ref={ref} className="py-24" style={{ borderTop: `1px solid ${C.sage}10` }}>
+            <div className="max-w-4xl mx-auto px-6 md:px-12 text-center">
+                <span
+                    data-reveal
+                    className="block text-[10px] tracking-[0.3em] uppercase mb-6"
+                    style={{ fontFamily: body, color: C.wood }}
                 >
-                  <div className="h-3.5 w-3.5 rounded-full border-2 border-white shadow" style={{ background: brand.green }} />
-                </div>
-              ))}
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <div className="text-xs uppercase tracking-[0.22em]" style={{ color: brand.green }}>
-                  Utility
-                </div>
-                <div className="mt-2 text-3xl" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: brand.text }}>
-                  Find Your Way
-                </div>
-              </div>
-            </div>
-            <div className="p-6">
-              <p className="text-[15px] leading-7">
-                Built for guests on-site who need immediate answers: restrooms, venues, parking, shuttles, services, and orientation.
-              </p>
-              <button
-                className="mt-5 rounded-full border px-6 py-3 text-sm font-medium"
-                style={{ borderColor: brand.green, color: brand.green }}
-              >
-                Open Property Map
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-20">
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div className="lg:sticky lg:top-28">
-            <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-              Cinematic mode example
-            </div>
-            <h2
-              className="mt-3 text-3xl leading-tight md:text-5xl"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}
-            >
-              Scroll through signature spaces while the map keeps orientation intact.
-            </h2>
-            <p className="mt-5 max-w-xl text-[15px] leading-7 md:text-[17px]">
-              The storytelling side should feel editorial and premium, but every section should still reinforce where the guest is on the property. The emotional experience and the practical map should never feel disconnected.
-            </p>
-            <div className="mt-8 rounded-[18px] border p-5" style={{ borderColor: brand.divider, background: brand.cream }}>
-              <div className="text-sm font-medium">Prototype behavior</div>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-neutral-700">
-                <li>• Section reveals are subtle and slow.</li>
-                <li>• Desktop uses a sticky visual panel.</li>
-                <li>• Mobile stacks content vertically with no heavy effects.</li>
-                <li>• The map highlights the current venue as the story advances.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {featuredSpaces.map((space, index) => (
-              <div
-                key={space.name}
-                className="overflow-hidden rounded-[20px] border"
-                style={{ borderColor: brand.divider, background: brand.cream }}
-              >
-                <div className="grid md:grid-cols-[1.15fr_0.85fr]">
-                  <div className="aspect-[4/3] md:aspect-auto">
-                    <img src={space.image} alt={space.name} className="h-full w-full object-cover" />
-                  </div>
-                  <div className="flex flex-col justify-between p-6 md:p-8">
-                    <div>
-                      <div className="text-xs uppercase tracking-[0.22em]" style={{ color: brand.sage }}>
-                        Chapter 0{index + 1}
-                      </div>
-                      <div
-                        className="mt-3 text-3xl md:text-4xl"
-                        style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                      >
-                        {space.name}
-                      </div>
-                      <div className="mt-2 text-sm font-medium" style={{ color: brand.wood }}>
-                        {space.type}
-                      </div>
-                      <p className="mt-4 text-[15px] leading-7 md:text-[17px]">{space.blurb}</p>
-                    </div>
-                    <div className="mt-6 flex flex-wrap gap-3">
-                      <span
-                        className="rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.16em]"
-                        style={{ background: '#ECE6DA', color: brand.green }}
-                      >
-                        Map highlight active
-                      </span>
-                      <span
-                        className="rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.16em]"
-                        style={{ background: '#ECE6DA', color: brand.green }}
-                      >
-                        Optional short video loop
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-20">
-        <div className="mb-6">
-          <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-            Fast-path wayfinding
-          </div>
-          <h2
-            className="mt-3 text-3xl md:text-5xl"
-            style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}
-          >
-            A practical layer for guests who need answers in seconds.
-          </h2>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div
-            className="rounded-[20px] border p-5 md:p-6"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-          >
-            <div className="text-sm font-medium">Quick find</div>
-            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
-              {quickFind.map((item) => (
-                <button
-                  key={item.label}
-                  className="rounded-[18px] border p-4 text-left transition duration-300 ease-in-out hover:-translate-y-0.5"
-                  style={{ borderColor: brand.divider, background: '#FBF8F2' }}
+                    Design Vision
+                </span>
+                <h2
+                    data-reveal
+                    className="text-3xl md:text-5xl font-light leading-[1.1] mb-8"
+                    style={{ fontFamily: display, color: C.cream }}
                 >
-                  <div className="text-xs uppercase tracking-[0.16em]" style={{ color: brand.sage }}>
-                    {item.kind}
-                  </div>
-                  <div className="mt-2 text-sm font-medium md:text-[15px]">{item.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div
-            className="overflow-hidden rounded-[20px] border"
-            style={{ borderColor: brand.divider, background: brand.cream }}
-          >
-            <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="relative min-h-[420px] border-b lg:border-b-0 lg:border-r" style={{ borderColor: brand.divider }}>
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      'linear-gradient(180deg, #F5F2EA 0%, #EAE4D8 100%)',
-                  }}
-                />
-                <svg viewBox="0 0 600 420" className="absolute inset-0 h-full w-full">
-                  <path d="M40 300 C 150 250, 210 250, 330 190 S 520 120, 560 100" fill="none" stroke={brand.sage} strokeWidth="12" strokeLinecap="round" opacity="0.65" />
-                  <path d="M80 80 C 140 110, 180 150, 210 210 S 310 330, 430 350" fill="none" stroke={brand.sage} strokeWidth="8" strokeLinecap="round" opacity="0.28" />
-                  <path d="M420 290 C 460 250, 500 240, 560 250" fill="none" stroke={brand.water} strokeWidth="24" strokeLinecap="round" opacity="0.55" />
-                  <rect x="100" y="250" width="52" height="34" rx="8" fill={brand.green} opacity="0.95" />
-                  <rect x="240" y="165" width="58" height="38" rx="8" fill={brand.green} opacity="0.95" />
-                  <rect x="330" y="230" width="70" height="42" rx="8" fill={brand.green} opacity="0.95" />
-                  <rect x="455" y="115" width="66" height="40" rx="8" fill={brand.green} opacity="0.95" />
-                </svg>
-                {mapPins.map((pin) => (
-                  <div
-                    key={pin.name}
-                    className="absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{ left: pin.x, top: pin.y }}
-                  >
-                    <div className="rounded-full border-2 border-white px-2 py-1 text-[10px] shadow-sm" style={{ background: brand.green, color: 'white' }}>
-                      {pin.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="p-6 md:p-7">
-                <div className="text-xs uppercase tracking-[0.2em]" style={{ color: brand.sage }}>
-                  Selected location
-                </div>
-                <div className="mt-3 text-3xl" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                  Redwood Grove
-                </div>
-                <p className="mt-4 text-[15px] leading-7">
-                  Ceremony venue surrounded by mature trees. This card can show a photo, a short description, walking hints, accessibility notes, and nearby essentials like restrooms or shuttle access.
+                    Not a map. Not a tour.<br />
+                    <em style={{ color: C.sand }}>A property guide.</em>
+                </h2>
+                <p
+                    data-reveal
+                    className="text-base leading-[1.8] max-w-2xl mx-auto"
+                    style={{ fontFamily: body, color: C.sage }}
+                >
+                    The strongest concept gives prospective guests something beautiful to explore
+                    and on-site guests something genuinely useful to navigate with. Every interaction
+                    is designed to feel like the ranch itself — warm, considered, and effortlessly elegant.
                 </p>
-                <div className="mt-6 space-y-3 text-sm">
-                  <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                    <span>Nearest restroom</span>
-                    <span style={{ color: brand.green }}>2 min walk</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                    <span>Nearest parking</span>
-                    <span style={{ color: brand.green }}>South lot</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-[14px] px-4 py-3" style={{ background: '#EFE9DD' }}>
-                    <span>Guest services</span>
-                    <span style={{ color: brand.green }}>Available</span>
-                  </div>
-                </div>
-                <button
-                  className="mt-6 rounded-full px-6 py-3 text-sm font-medium text-white"
-                  style={{ background: brand.green }}
-                >
-                  View directions
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </section>
+    );
+}
 
-      <section className="mx-auto max-w-7xl px-5 pb-16 pt-6 md:px-8 md:pb-24">
-        <div
-          className="rounded-[20px] border p-6 md:p-10"
-          style={{ borderColor: brand.divider, background: brand.cream }}
-        >
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div>
-              <div className="text-xs uppercase tracking-[0.24em]" style={{ color: brand.sage }}>
-                Proposal takeaway
-              </div>
-              <h2
-                className="mt-3 text-3xl leading-tight md:text-5xl"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '0.02em' }}
-              >
-                The strongest concept is not a 3D tour or a plain map.
-              </h2>
-              <p className="mt-5 max-w-3xl text-[15px] leading-7 md:text-[17px]">
-                It is a luxury digital property guide that gives prospective guests something beautiful to explore and gives on-site guests something genuinely useful to navigate with.
-              </p>
+/* ================================================================== */
+/*  FOOTER                                                             */
+/* ================================================================== */
+function Footer() {
+    return (
+        <footer className="py-16 text-center" style={{ borderTop: `1px solid ${C.sage}10` }}>
+            <p
+                className="text-xs tracking-[0.2em] uppercase"
+                style={{ fontFamily: body, color: `${C.sage}50` }}
+            >
+                Calamigos Ranch — Interactive Venue Guide Proposal
+            </p>
+            <p
+                className="text-[10px] tracking-[0.15em] mt-2"
+                style={{ fontFamily: mono, color: `${C.sage}30` }}
+            >
+                Design & Development by Dave Peloso
+            </p>
+        </footer>
+    );
+}
+
+/* ================================================================== */
+/*  PAGE                                                               */
+/* ================================================================== */
+export default function Calamigos() {
+    useFonts();
+
+    useEffect(() => {
+        const timeout = setTimeout(() => ScrollTrigger.refresh(), 150);
+        return () => clearTimeout(timeout);
+    }, []);
+
+    return (
+        <SmoothScroll lerp={0.09} duration={1.3}>
+            <div className="min-h-screen" style={{ background: C.groveDark, color: C.cream }}>
+                <DevBoardsNav />
+                <HeroSection />
+                <StatsBar />
+                <VenueMap />
+                <ConceptSection />
+                <Footer />
             </div>
-            <div className="flex flex-wrap gap-3">
-              <button
-                className="rounded-full px-6 py-3 text-sm font-medium text-white"
-                style={{ background: brand.green }}
-              >
-                Present Hybrid Concept
-              </button>
-              <button
-                className="rounded-full border px-6 py-3 text-sm font-medium"
-                style={{ borderColor: brand.green, color: brand.green }}
-              >
-                Review Media Plan
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+        </SmoothScroll>
+    );
 }

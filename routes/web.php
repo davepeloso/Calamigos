@@ -11,6 +11,8 @@ Route::inertia('moodboard/animations', 'MoodboardDesignAnimations')->name('moodb
 Route::inertia('moodboard/vocabulary', 'DesignVocabulary')->name('moodboard.vocabulary');
 Route::inertia('moodboard/easing', 'EasingCurves')->name('moodboard.easing');
 Route::inertia('moodboard/color', 'ColorAtmosphere')->name('moodboard.color');
+Route::inertia('moodboard/scrollcraft', 'ScrollCraft')->name('moodboard.scrollcraft');
+Route::inertia('moodboard/snapflow', 'SnapFlow')->name('moodboard.snapflow');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
