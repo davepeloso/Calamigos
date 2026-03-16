@@ -103,6 +103,43 @@ const ExploreMode = ({
           >
             Back to Home
           </button>
+          <div className="relative group">
+            <button
+              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
+              style={{ borderColor: brand.sage, color: brand.sage }}
+            >
+              Moodboards
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <a
+                href="/moodboard/motion"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Motion Animations
+              </a>
+              <a
+                href="/moodboard/fonts"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Google Fonts
+              </a>
+              <a
+                href="/moodboard/scrollytelling"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Scrollytelling
+              </a>
+              <a
+                href="/moodboard/animations"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Design Animations
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -298,6 +335,43 @@ const NavigateMode = ({
           >
             Back to Home
           </button>
+          <div className="relative group">
+            <button
+              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
+              style={{ borderColor: brand.sage, color: brand.sage }}
+            >
+              Moodboards
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <a
+                href="/moodboard/motion"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Motion Animations
+              </a>
+              <a
+                href="/moodboard/fonts"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Google Fonts
+              </a>
+              <a
+                href="/moodboard/scrollytelling"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Scrollytelling
+              </a>
+              <a
+                href="/moodboard/animations"
+                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              >
+                Design Animations
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -654,6 +728,50 @@ export default function CalamigosHybridPrototype() {
             >
               Explore the Ranch
             </button>
+            <a
+              href="/designs"
+              className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md"
+              style={{ borderColor: brand.sage, color: brand.sage }}
+            >
+              Designs
+            </a>
+            <div className="relative group">
+              <button
+                className="rounded-full border px-5 py-2.5 text-sm transition-all hover:shadow-md flex items-center gap-2"
+                style={{ borderColor: brand.sage, color: brand.sage }}
+              >
+                Moodboards
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <a
+                  href="/moodboard/motion"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Motion Animations
+                </a>
+                <a
+                  href="/moodboard/fonts"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Google Fonts
+                </a>
+                <a
+                  href="/moodboard/scrollytelling"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Scrollytelling
+                </a>
+                <a
+                  href="/moodboard/animations"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Design Animations
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </header>

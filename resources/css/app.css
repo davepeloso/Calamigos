@@ -13,6 +13,10 @@
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
+    --font-display: 'Cormorant Garamond', 'Georgia', serif;
+    --font-body: 'DM Sans', 'system-ui', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
@@ -59,6 +63,22 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Calamigos Brand Palette */
+    --color-grove: #2F4A3F;
+    --color-grove-dark: #243A32;
+    --color-grove-light: #3D6152;
+    --color-sand: #EAE4D8;
+    --color-sand-dark: #D4CBBA;
+    --color-cream: #F5F2EA;
+    --color-cream-warm: #FAF7F0;
+    --color-sage: #7A8F82;
+    --color-sage-light: #95A89C;
+    --color-wood: #8A6B4F;
+    --color-wood-light: #A4845E;
+    --color-water: #A8C0C8;
+    --color-charcoal: #2C2C2C;
+    --color-divider: #DCD6CA;
 }
 
 :root {
@@ -140,4 +160,72 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Film grain overlay effect */
+.grain-overlay {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.3;
+    animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-15%, 5%); }
+    30% { transform: translate(7%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-15%, 10%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(3%, 35%); }
+    90% { transform: translate(-10%, 10%); }
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Editorial text selection */
+::selection {
+    background-color: #2F4A3F;
+    color: #F5F2EA;
+}
+
+/* Horizontal scroll hide scrollbar */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Elegant underline animation */
+.editorial-link {
+    position: relative;
+    display: inline-block;
+}
+.editorial-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.editorial-link:hover::after {
+    width: 100%;
 }
