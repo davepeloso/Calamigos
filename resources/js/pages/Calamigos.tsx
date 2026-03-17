@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import SmoothScroll from '@/components/SmoothScroll';
+import DeckNav from '@/components/DeckNav';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -643,6 +644,8 @@ const devBoardPages = [
     { id: 'scrollcraft', label: 'GSAP', href: '/moodboard/scrollcraft' },
     { id: 'snapflow', label: 'Snap', href: '/moodboard/snapflow' },
     { id: 'designs', label: 'Play', href: '/designs' },
+    { id: 'v2', label: 'v1.1', href: '/v2' },
+    { id: 'cover', label: 'Cover', href: '/' },
 ];
 
 function DevBoardsNav() {
@@ -1228,6 +1231,7 @@ export default function Calamigos() {
     return (
         <SmoothScroll lerp={0.09} duration={1.3}>
             <div className="min-h-screen" style={{ background: C.groveDark, color: C.cream }}>
+                <DeckNav currentDeck="v1.0" />
                 <DevBoardsNav />
                 <HeroSection />
                 <StatsBar />
