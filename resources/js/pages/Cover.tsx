@@ -510,7 +510,7 @@ const panels = [
         number: '01',
         title: 'Photography',
         accent: '#4d665a',
-        body: `This property deserves photography that feels as grounded as the land itself. The right approach is natural, unhurried — still and video work that lets Calamigos speak for itself rather than overselling it.`,
+        body: `The right approach is natural & unhurried — photography that lets Calamigos speak for itself rather than overselling it.`,
         philosophy: `Earthy tones, deep shadows, uncluttered backgrounds. Shallow depth of field to isolate what matters. Soft whites, deep greens, subtle film grain — nothing oversaturated. After thirty years behind the lens, I know this look works: classic, premium, and honest to the place.`,
         details: [
             'Natural light, golden hour',
