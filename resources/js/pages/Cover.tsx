@@ -389,11 +389,11 @@ function Hero() {
                         className="hero-label mb-10 block text-[10px] tracking-[0.5em] uppercase"
                         style={{ fontFamily: mono, color: C.sage }}
                     >
-                        Media & Design
+                        Calamigos Ranch
                     </span>
 
                     <h1 className="mb-0 overflow-hidden">
-                        {'Dave Peloso'.split(' ').map((word, i) => (
+                        {'Visual Direction'.split(' ').map((word, i) => (
                             <span
                                 key={i}
                                 className="name-word mx-[0.06em] inline-block text-[clamp(3.5rem,12vw,9rem)] leading-[0.88] font-light tracking-tight"
@@ -417,7 +417,7 @@ function Hero() {
                         className="hero-role text-sm tracking-[0.25em] uppercase"
                         style={{ fontFamily: body, color: C.sage, opacity: 0 }}
                     >
-                        Photography · Design
+                        Photography · Design · Digital Experience
                     </p>
 
                     {/* Deck cards — inline under name */}
@@ -510,8 +510,8 @@ const panels = [
         number: '01',
         title: 'Photography',
         accent: '#4d665a',
-        body: `Photography is one of our most essential tools. Whether for still photography or video, a distinctive natural photographic style has been created to portray our vision and brand values.`,
-        philosophy: `My photography is earthy, deep and has uncluttered backgrounds to ensure subjects stand out — or employs a shallow depth of field to achieve the same result. Characterized by soft whites, deep greens, and subtle film grain. Our photos are not overly saturated and have a classic premium aesthetic.`,
+        body: `This property deserves photography that feels as grounded as the land itself. The right approach is natural, unhurried — still and video work that lets Calamigos speak for itself rather than overselling it.`,
+        philosophy: `Earthy tones, deep shadows, uncluttered backgrounds. Shallow depth of field to isolate what matters. Soft whites, deep greens, subtle film grain — nothing oversaturated. After thirty years behind the lens, I know this look works: classic, premium, and honest to the place.`,
         details: [
             'Natural light, golden hour',
             'Shallow depth of field',
@@ -525,8 +525,8 @@ const panels = [
         number: '02',
         title: 'Color Composition\n& Typography',
         accent: '#847963',
-        body: `Colour means everything to me. It helps define who we are. It's one of the strongest elements we use to connect with our audience. It simultaneously establishes tone and aids in the recognition of our brand across all communications — thus the balanced use of colour is crucial.`,
-        philosophy: `Typography is an essential element in our visual language. Our typographic system is built on legibility and accessibility. It's clear, bold, and endlessly expressive. It's a keystone of our identity, and through careful and consistent application of typographic principles across all communications, a vital tool in building brand recognition.`,
+        body: `Color is the first thing people feel before they read a single word. For this project, the palette needs to ground every touchpoint — establishing tone and building recognition across all communications. Getting it right is non-negotiable.`,
+        philosophy: `The type system should be built on legibility and quiet confidence. Clear, expressive, never fighting the imagery. Paired with a deliberate five-swatch palette drawn from the ranch itself, typography becomes a tool for brand recognition — not decoration.`,
         details: [
             'Cormorant Garamond — editorial display',
             'DM Sans — clean, modern body',
@@ -540,8 +540,8 @@ const panels = [
         number: '03',
         title: 'Atmosphere\n& Interaction',
         accent: '#96acac',
-        body: `Every scroll, every hover, every transition is authored — never arbitrary. The interface should feel like the brand itself: warm, considered, and effortlessly elegant. Motion is restraint. Timing is everything.`,
-        philosophy: `We build with GSAP ScrollTrigger, Motion.js, and Lenis smooth scroll. Pin, scrub, snap, batch — each technique chosen for its emotional effect, not its novelty. The reader's scroll becomes a creative instrument.`,
+        body: `Every scroll, every hover, every transition should be authored — never arbitrary. The digital experience needs to feel like the brand itself: warm, considered, and effortlessly elegant. Motion is restraint. Timing is everything.`,
+        philosophy: `The right tools for this are GSAP ScrollTrigger, Motion.js, and Lenis smooth scroll. Pin, scrub, snap, batch — each technique chosen for its emotional effect, not its novelty. The visitor's scroll becomes a creative instrument that reveals the property at just the right pace.`,
         details: [
             'GSAP + ScrollTrigger choreography',
             'Motion.js spring physics',
@@ -1069,7 +1069,7 @@ function ContactFooter() {
                     className="mb-8 block text-[10px] tracking-[0.4em] uppercase"
                     style={{ fontFamily: mono, color: C.sage }}
                 >
-                    Let's build something beautiful
+                    Let's make this right
                 </span>
 
                 <h2
