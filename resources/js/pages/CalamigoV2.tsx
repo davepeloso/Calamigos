@@ -105,7 +105,7 @@ const LOCATIONS: MapLocation[] = [
     { name: 'Members Pool & Studio', shortName: 'Members Pool', x: 0.24, y: 0.56, category: 'wellness', description: 'Private pool with yoga studio.' },
     { name: 'Pavilion Pool', shortName: 'Pvln Pool', x: 0.37, y: 0.83, category: 'wellness', description: 'Adults-only infinity pool.' },
     { name: 'Estate Pool', shortName: 'Estate Pool', x: 0.77, y: 0.22, category: 'wellness', description: 'Hillside pool with panoramic views.' },
-    { name: 'The Beach Club', shortName: 'Beach Club', x: 0.62, y: 0.08, category: 'wellness', description: 'Sandy oasis with cabanas.' },
+    { name: 'The Beach Club', shortName: 'Beach Club', x: 0.67, y: 0.06, category: 'wellness', description: 'Sandy oasis with cabanas.' },
     { name: 'Ferris Wheel', shortName: 'Ferris Whl', x: 0.54, y: 0.78, category: 'wellness', description: 'Iconic ranch landmark.' },
     { name: 'Stables', shortName: 'Stables', x: 0.09, y: 0.44, category: 'wellness', description: 'Equestrian center with guided rides.' },
     { name: 'The Vineyards', shortName: 'Vineyards', x: 0.13, y: 0.41, category: 'wellness', description: 'Estate vineyard with tastings.' },
@@ -425,7 +425,19 @@ function MapReveal({ selectedCategory, onSelectLocation, onBack }: MapRevealProp
             {/* Map */}
             <div className="max-w-6xl mx-auto px-6 md:px-12 py-12">
                 <div className="relative rounded-sm overflow-hidden" style={{ aspectRatio: '10/7', background: C.groveDark, border: `1px solid ${C.sage}12` }}>
-                    <TopoLines opacity={0.1} />
+                    {/* Illustrated map image — desaturated & darkened to fit brand */}
+                    <img
+                        src="/images-from-site/map.jpg"
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                        style={{
+                            opacity: 0.15,
+                            filter: 'saturate(0.3) brightness(0.6) contrast(1.1)',
+                            mixBlendMode: 'luminosity',
+                            objectPosition: '52% 47%',
+                        }}
+                    />
+                    <TopoLines opacity={0.04} />
 
                     {/* Subtle grid */}
                     <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.03 }}>
@@ -627,7 +639,13 @@ function LocationDetail({ locationIndex, onBack, onSelectStartPoint, startPointI
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.5 }}
                                     >
-                                        <TopoLines opacity={0.06} />
+                                        <img
+                                            src="/images-from-site/map.jpg"
+                                            alt=""
+                                            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                                            style={{ opacity: 0.12, filter: 'saturate(0.2) brightness(0.5) contrast(1.1)', mixBlendMode: 'luminosity', objectPosition: '52% 47%' }}
+                                        />
+                                        <TopoLines opacity={0.03} />
 
                                         {/* Media placeholder content */}
                                         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -657,7 +675,13 @@ function LocationDetail({ locationIndex, onBack, onSelectStartPoint, startPointI
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ duration: 0.5 }}
                                     >
-                                        <TopoLines opacity={0.08} />
+                                        <img
+                                            src="/images-from-site/map.jpg"
+                                            alt=""
+                                            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                                            style={{ opacity: 0.12, filter: 'saturate(0.2) brightness(0.5) contrast(1.1)', mixBlendMode: 'luminosity', objectPosition: '52% 47%' }}
+                                        />
+                                        <TopoLines opacity={0.03} />
 
                                         {/* Route SVG */}
                                         <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">

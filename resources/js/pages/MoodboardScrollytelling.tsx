@@ -230,7 +230,7 @@ function StickyNarrative() {
 
     useMotionValueEvent(smoothProgress, 'change', (v: number) => {
         const stepCount = narrativeSteps.length;
-        const idx = Math.min(stepCount - 1, Math.floor(v * stepCount));
+        const idx = Math.max(0, Math.min(stepCount - 1, Math.floor(v * stepCount)));
         setActiveStep(idx);
     });
 

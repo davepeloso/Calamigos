@@ -52,16 +52,59 @@ function useFonts(): void {
 /* ================================================================== */
 function TopoLines({ opacity = 0.05 }: { opacity?: number }) {
     return (
-        <svg viewBox="0 0 1000 700" fill="none" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" style={{ opacity }}>
-            <path d="M-50 350 C100 280,200 200,350 220 S550 300,650 250 S800 180,950 220" stroke={C.sage} strokeWidth="0.7" />
-            <path d="M-30 380 C80 320,180 250,320 260 S520 330,620 290 S780 220,930 250" stroke={C.sage} strokeWidth="0.7" />
-            <path d="M500 50 C550 80,620 60,700 90 S820 120,900 80 L1050 100" stroke={C.sage} strokeWidth="0.5" />
-            <path d="M520 80 C560 105,630 90,710 115 S830 140,910 110" stroke={C.sage} strokeWidth="0.5" />
-            <path d="M-50 200 C30 180,100 160,180 190 S280 240,340 210 S420 170,480 200" stroke={C.sage} strokeWidth="0.5" />
-            <path d="M200 480 C280 450,360 420,440 440 S560 490,640 460 S740 430,820 450" stroke={C.sage} strokeWidth="0.6" />
-            <path d="M160 540 C240 520,320 500,400 510 S520 540,600 520 S700 500,780 510" stroke={C.sage} strokeWidth="0.6" />
-            <path d="M100 600 C180 560,260 530,340 520 S450 510,530 490 S650 460,750 440" stroke={C.sage} strokeWidth="0.8" strokeDasharray="8 6" />
-            <path d="M700 300 C730 275,780 270,810 290 S830 330,805 345 S760 350,730 335 S690 315,700 300Z" stroke={C.sage} strokeWidth="0.4" />
+        <svg
+            viewBox="0 0 1000 700"
+            fill="none"
+            className="absolute inset-0 h-full w-full"
+            preserveAspectRatio="xMidYMid slice"
+            style={{ opacity }}
+        >
+            <path
+                d="M-50 350 C100 280,200 200,350 220 S550 300,650 250 S800 180,950 220"
+                stroke={C.sage}
+                strokeWidth="0.7"
+            />
+            <path
+                d="M-30 380 C80 320,180 250,320 260 S520 330,620 290 S780 220,930 250"
+                stroke={C.sage}
+                strokeWidth="0.7"
+            />
+            <path
+                d="M500 50 C550 80,620 60,700 90 S820 120,900 80 L1050 100"
+                stroke={C.sage}
+                strokeWidth="0.5"
+            />
+            <path
+                d="M520 80 C560 105,630 90,710 115 S830 140,910 110"
+                stroke={C.sage}
+                strokeWidth="0.5"
+            />
+            <path
+                d="M-50 200 C30 180,100 160,180 190 S280 240,340 210 S420 170,480 200"
+                stroke={C.sage}
+                strokeWidth="0.5"
+            />
+            <path
+                d="M200 480 C280 450,360 420,440 440 S560 490,640 460 S740 430,820 450"
+                stroke={C.sage}
+                strokeWidth="0.6"
+            />
+            <path
+                d="M160 540 C240 520,320 500,400 510 S520 540,600 520 S700 500,780 510"
+                stroke={C.sage}
+                strokeWidth="0.6"
+            />
+            <path
+                d="M100 600 C180 560,260 530,340 520 S450 510,530 490 S650 460,750 440"
+                stroke={C.sage}
+                strokeWidth="0.8"
+                strokeDasharray="8 6"
+            />
+            <path
+                d="M700 300 C730 275,780 270,810 290 S830 330,805 345 S760 350,730 335 S690 315,700 300Z"
+                stroke={C.sage}
+                strokeWidth="0.4"
+            />
         </svg>
     );
 }
@@ -72,7 +115,7 @@ function TopoLines({ opacity = 0.05 }: { opacity?: number }) {
 function FilmGrain() {
     return (
         <div
-            className="fixed inset-0 pointer-events-none z-[60]"
+            className="pointer-events-none fixed inset-0 z-[60]"
             style={{
                 opacity: 0.03,
                 backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
@@ -88,94 +131,213 @@ function FilmGrain() {
 function Hero() {
     const ref = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        if (!ref.current) return;
-        const tl = gsap.timeline({ delay: 0.4 });
+    useGSAP(
+        () => {
+            if (!ref.current) return;
+            const tl = gsap.timeline({ delay: 0.4 });
 
-        // Swatch bar grows in
-        tl.fromTo(ref.current.querySelectorAll('.swatch'),
-            { scaleY: 0, opacity: 0 },
-            { scaleY: 1, opacity: 1, stagger: 0.06, duration: 0.8, ease: 'power3.out' }
-        );
+            // Swatch bar grows in
+            tl.fromTo(
+                ref.current.querySelectorAll('.swatch'),
+                { scaleY: 0, opacity: 0 },
+                {
+                    scaleY: 1,
+                    opacity: 1,
+                    stagger: 0.06,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                },
+            );
 
-        // Top label
-        tl.fromTo(ref.current.querySelector('.hero-label'),
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 0.4, duration: 0.7, ease: 'power2.out' },
-            '-=0.4'
-        );
+            // Top label
+            tl.fromTo(
+                ref.current.querySelector('.hero-label'),
+                { y: 15, opacity: 0 },
+                { y: 0, opacity: 0.4, duration: 0.7, ease: 'power2.out' },
+                '-=0.4',
+            );
 
-        // Name words
-        tl.fromTo(ref.current.querySelectorAll('.name-word'),
-            { y: 100, opacity: 0, skewY: 6 },
-            { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: 'power4.out' },
-            '-=0.5'
-        );
+            // Name words
+            tl.fromTo(
+                ref.current.querySelectorAll('.name-word'),
+                { y: 100, opacity: 0, skewY: 6 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    skewY: 0,
+                    duration: 1.2,
+                    stagger: 0.1,
+                    ease: 'power4.out',
+                },
+                '-=0.5',
+            );
 
-        // Horizontal rule
-        tl.fromTo(ref.current.querySelector('.hero-rule'),
-            { scaleX: 0 },
-            { scaleX: 1, duration: 1, ease: 'power2.inOut' },
-            '-=0.7'
-        );
+            // Horizontal rule
+            tl.fromTo(
+                ref.current.querySelector('.hero-rule'),
+                { scaleX: 0 },
+                { scaleX: 1, duration: 1, ease: 'power2.inOut' },
+                '-=0.7',
+            );
 
-        // Subtitle
-        tl.fromTo(ref.current.querySelector('.hero-role'),
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-            '-=0.5'
-        );
+            // Subtitle
+            tl.fromTo(
+                ref.current.querySelector('.hero-role'),
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+                '-=0.5',
+            );
 
-        // Scroll cue
-        tl.fromTo(ref.current.querySelector('.scroll-cue'),
-            { opacity: 0 },
-            { opacity: 0.3, duration: 1 },
-            '-=0.2'
-        );
+            // Deck cards
+            tl.fromTo(
+                ref.current.querySelectorAll('.deck-cards a'),
+                { y: 25, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.08,
+                    duration: 0.7,
+                    ease: 'power2.out',
+                },
+                '-=0.3',
+            );
 
-        // Parallax exit
-        gsap.to(ref.current.querySelector('.hero-content'), {
-            y: -100, opacity: 0,
-            scrollTrigger: { trigger: ref.current, start: 'top top', end: '70% top', scrub: 1 },
-        });
-    }, { scope: ref });
+            // Scroll cue
+            tl.fromTo(
+                ref.current.querySelector('.scroll-cue'),
+                { opacity: 0 },
+                { opacity: 0.3, duration: 1 },
+                '-=0.2',
+            );
+
+            // Parallax exit
+            gsap.to(ref.current.querySelector('.hero-content'), {
+                y: -100,
+                opacity: 0,
+                scrollTrigger: {
+                    trigger: ref.current,
+                    start: 'top top',
+                    end: '70% top',
+                    scrub: 1,
+                },
+            });
+        },
+        { scope: ref },
+    );
 
     return (
         <section ref={ref} className="relative h-[130vh] overflow-hidden">
             <TopoLines opacity={0.04} />
 
             {/* Color swatch strip — left edge */}
-            <div className="absolute left-0 top-0 bottom-0 flex flex-col z-10">
+            <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col">
                 {swatches.map((color, i) => (
-                    <div key={i} className="swatch flex-1 w-[6px] origin-top" style={{ background: color, opacity: 0 }} />
+                    <div
+                        key={i}
+                        className="swatch w-[6px] flex-1 origin-top"
+                        style={{ background: color, opacity: 0 }}
+                    />
                 ))}
             </div>
 
-            <div className="sticky top-0 h-screen flex items-center justify-center">
-                <div className="hero-content text-center px-8 max-w-4xl relative z-10">
-                    <span className="hero-label block text-[10px] tracking-[0.5em] uppercase mb-10"
-                          style={{ fontFamily: mono, color: C.sage }}>
+            <div className="sticky top-0 flex h-screen items-center justify-center">
+                <div className="hero-content relative z-10 max-w-4xl px-8 text-center">
+                    <span
+                        className="hero-label mb-10 block text-[10px] tracking-[0.5em] uppercase"
+                        style={{ fontFamily: mono, color: C.sage }}
+                    >
                         Media & Design
                     </span>
 
-                    <h1 className="overflow-hidden mb-0">
+                    <h1 className="mb-0 overflow-hidden">
                         {'Dave Peloso'.split(' ').map((word, i) => (
-                            <span key={i} className="name-word inline-block text-[clamp(3.5rem,12vw,9rem)] font-light leading-[0.88] tracking-tight mx-[0.06em]"
-                                  style={{ fontFamily: display, color: C.cream }}>{word}</span>
+                            <span
+                                key={i}
+                                className="name-word mx-[0.06em] inline-block text-[clamp(3.5rem,12vw,9rem)] leading-[0.88] font-light tracking-tight"
+                                style={{ fontFamily: display, color: C.cream }}
+                            >
+                                {word}
+                            </span>
                         ))}
                     </h1>
 
-                    <div className="hero-rule h-[1px] w-48 mx-auto my-8 origin-center" style={{ background: `${C.sage}40` }} />
+                    <div
+                        className="hero-rule mx-auto my-8 h-[1px] w-48 origin-center"
+                        style={{ background: `${C.sage}40` }}
+                    />
 
-                    <p className="hero-role text-sm tracking-[0.25em] uppercase"
-                       style={{ fontFamily: body, color: C.sage, opacity: 0 }}>
-                        Photography · Design · Interactive Experience
+                    <p
+                        className="hero-role text-sm tracking-[0.25em] uppercase"
+                        style={{ fontFamily: body, color: C.sage, opacity: 0 }}
+                    >
+                        Photography · Design
                     </p>
 
-                    <div className="scroll-cue mt-20 flex flex-col items-center gap-2">
-                        <span className="text-[9px] tracking-[0.3em] uppercase" style={{ fontFamily: mono, color: C.sage }}>Scroll</span>
-                        <div className="w-[1px] h-12 overflow-hidden" style={{ background: `${C.sage}25` }}>
-                            <div className="w-full h-4" style={{ background: C.cream, animation: 'coverPulse 2.2s ease-in-out infinite' }} />
+                    {/* Deck cards — inline under name */}
+                    <div className="deck-cards mx-auto mt-12 grid max-w-xl grid-cols-3 gap-3">
+                        {deckCards.map((d, i) => (
+                            <a
+                                key={i}
+                                href={d.href}
+                                className="group relative block overflow-hidden rounded-sm px-4 py-3.5 text-center transition-transform duration-300 hover:-translate-y-1"
+                                style={{
+                                    background: `${C.grove}20`,
+                                    border: `1px solid ${C.sage}10`,
+                                }}
+                            >
+                                <div
+                                    className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${d.accent}12, transparent)`,
+                                    }}
+                                />
+                                <div className="relative z-10">
+                                    <span
+                                        className="mb-1 block text-[9px] tracking-[0.15em] uppercase"
+                                        style={{
+                                            fontFamily: mono,
+                                            color: d.accent,
+                                        }}
+                                    >
+                                        {d.version}
+                                    </span>
+                                    <span
+                                        className="block text-sm font-light"
+                                        style={{
+                                            fontFamily: display,
+                                            color: C.cream,
+                                        }}
+                                    >
+                                        {d.title}
+                                    </span>
+                                </div>
+                                <div
+                                    className="absolute right-0 bottom-0 left-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                                    style={{ background: d.accent }}
+                                />
+                            </a>
+                        ))}
+                    </div>
+
+                    <div className="scroll-cue mt-14 flex flex-col items-center gap-2">
+                        <span
+                            className="text-[9px] tracking-[0.3em] uppercase"
+                            style={{ fontFamily: mono, color: C.sage }}
+                        >
+                            Scroll
+                        </span>
+                        <div
+                            className="h-12 w-[1px] overflow-hidden"
+                            style={{ background: `${C.sage}25` }}
+                        >
+                            <div
+                                className="h-4 w-full"
+                                style={{
+                                    background: C.cream,
+                                    animation:
+                                        'coverPulse 2.2s ease-in-out infinite',
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -246,50 +408,66 @@ const panels = [
 function PanelStack() {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        if (!containerRef.current) return;
-        const panelEls = containerRef.current.querySelectorAll<HTMLElement>('.stack-panel');
+    useGSAP(
+        () => {
+            if (!containerRef.current) return;
+            const panelEls =
+                containerRef.current.querySelectorAll<HTMLElement>(
+                    '.stack-panel',
+                );
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: 'top top',
-                end: `+=${(panelEls.length - 1) * 120}%`,
-                pin: true,
-                scrub: 1.5,
-                invalidateOnRefresh: true,
-            },
-        });
-
-        panelEls.forEach((panel, i) => {
-            if (i === 0) return;
-
-            // Previous panel fades slightly
-            tl.to(panelEls[i - 1].querySelector('.panel-content'), {
-                opacity: 0.15, y: -30, duration: 0.3,
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: 'top top',
+                    end: `+=${(panelEls.length - 1) * 120}%`,
+                    pin: true,
+                    scrub: 1.5,
+                    invalidateOnRefresh: true,
+                },
             });
 
-            // New panel slides up
-            tl.fromTo(panel,
-                { yPercent: 100 },
-                { yPercent: 0, duration: 1, ease: 'none' },
-                '-=0.15'
-            );
+            panelEls.forEach((panel, i) => {
+                if (i === 0) return;
 
-            // New panel content animates in
-            const content = panel.querySelectorAll('[data-anim]');
-            tl.fromTo(content,
-                { y: 40, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.06, duration: 0.5, ease: 'power2.out' },
-                '-=0.3'
-            );
+                // Previous panel fades slightly
+                tl.to(panelEls[i - 1].querySelector('.panel-content'), {
+                    opacity: 0.15,
+                    y: -30,
+                    duration: 0.3,
+                });
 
-            // Hold
-            if (i < panelEls.length - 1) {
-                tl.to({}, { duration: 0.4 });
-            }
-        });
-    }, { scope: containerRef });
+                // New panel slides up
+                tl.fromTo(
+                    panel,
+                    { yPercent: 100 },
+                    { yPercent: 0, duration: 1, ease: 'none' },
+                    '-=0.15',
+                );
+
+                // New panel content animates in
+                const content = panel.querySelectorAll('[data-anim]');
+                tl.fromTo(
+                    content,
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        stagger: 0.06,
+                        duration: 0.5,
+                        ease: 'power2.out',
+                    },
+                    '-=0.3',
+                );
+
+                // Hold
+                if (i < panelEls.length - 1) {
+                    tl.to({}, { duration: 0.4 });
+                }
+            });
+        },
+        { scope: containerRef },
+    );
 
     return (
         <div ref={containerRef} className="relative h-screen overflow-hidden">
@@ -300,36 +478,60 @@ function PanelStack() {
                     style={{
                         background: C.bg,
                         zIndex: i + 1,
-                        borderTop: i > 0 ? `1px solid ${panel.accent}20` : 'none',
+                        borderTop:
+                            i > 0 ? `1px solid ${panel.accent}20` : 'none',
                     }}
                 >
-                    <div className="panel-content h-full flex items-center">
-                        <div className="w-full max-w-6xl mx-auto px-8 md:px-16 grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-20">
+                    <div className="panel-content flex h-full items-start overflow-y-auto pt-20 pb-12">
+                        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-8 md:px-16 lg:grid-cols-[1fr_1fr] lg:gap-16">
                             {/* Left — title + philosophy */}
                             <div>
-                                <span data-anim className="block text-[10px] tracking-[0.3em] uppercase mb-6"
-                                      style={{ fontFamily: mono, color: panel.accent }}>
+                                <span
+                                    data-anim
+                                    className="mb-6 block text-[10px] tracking-[0.3em] uppercase"
+                                    style={{
+                                        fontFamily: mono,
+                                        color: panel.accent,
+                                    }}
+                                >
                                     {panel.number}
                                 </span>
 
-                                <h2 data-anim className="text-4xl md:text-6xl font-light leading-[1.0] mb-8 whitespace-pre-line"
-                                    style={{ fontFamily: display, color: C.cream }}>
+                                <h2
+                                    data-anim
+                                    className="mb-8 text-4xl leading-[1.0] font-light whitespace-pre-line md:text-6xl"
+                                    style={{
+                                        fontFamily: display,
+                                        color: C.cream,
+                                    }}
+                                >
                                     {panel.title}
                                 </h2>
 
-                                <p data-anim className="text-base leading-[1.9] mb-6"
-                                   style={{ fontFamily: body, color: C.sage }}>
+                                <p
+                                    data-anim
+                                    className="mb-6 text-base leading-[1.9]"
+                                    style={{ fontFamily: body, color: C.sage }}
+                                >
                                     {panel.body}
                                 </p>
 
                                 {/* Color swatch row for color panel */}
                                 {panel.id === 'color' && (
-                                    <div data-anim className="flex gap-2 mt-4">
+                                    <div data-anim className="mt-4 flex gap-2">
                                         {swatches.map((color, si) => (
-                                            <div key={si} className="flex-1 h-10 rounded-sm relative group cursor-default"
-                                                 style={{ background: color }}>
-                                                <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[8px] opacity-0 group-hover:opacity-100 transition-opacity"
-                                                      style={{ fontFamily: mono, color: `${C.sage}80` }}>
+                                            <div
+                                                key={si}
+                                                className="group relative h-10 flex-1 cursor-default rounded-sm"
+                                                style={{ background: color }}
+                                            >
+                                                <span
+                                                    className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[8px] opacity-0 transition-opacity group-hover:opacity-100"
+                                                    style={{
+                                                        fontFamily: mono,
+                                                        color: `${C.sage}80`,
+                                                    }}
+                                                >
                                                     {color}
                                                 </span>
                                             </div>
@@ -340,20 +542,44 @@ function PanelStack() {
 
                             {/* Right — extended philosophy + details */}
                             <div className="flex flex-col justify-center">
-                                <p data-anim className="text-sm leading-[1.9] mb-8 italic"
-                                   style={{ fontFamily: display, color: `${C.cream}CC`, fontSize: '1.1rem' }}>
+                                <p
+                                    data-anim
+                                    className="mb-8 text-sm leading-[1.9] italic"
+                                    style={{
+                                        fontFamily: display,
+                                        color: `${C.cream}CC`,
+                                        fontSize: '1.1rem',
+                                    }}
+                                >
                                     "{panel.philosophy}"
                                 </p>
 
-                                <div data-anim className="h-[1px] mb-6" style={{ background: `${C.sage}15` }} />
+                                <div
+                                    data-anim
+                                    className="mb-6 h-[1px]"
+                                    style={{ background: `${C.sage}15` }}
+                                />
 
                                 <ul className="space-y-2.5">
                                     {panel.details.map((d, di) => (
-                                        <li key={di} data-anim className="flex items-center gap-3">
-                                            <span className="w-1.5 h-1.5 rounded-full shrink-0"
-                                                  style={{ background: panel.accent }} />
-                                            <span className="text-xs tracking-[0.05em]"
-                                                  style={{ fontFamily: body, color: C.sage }}>
+                                        <li
+                                            key={di}
+                                            data-anim
+                                            className="flex items-center gap-3"
+                                        >
+                                            <span
+                                                className="h-1.5 w-1.5 shrink-0 rounded-full"
+                                                style={{
+                                                    background: panel.accent,
+                                                }}
+                                            />
+                                            <span
+                                                className="text-xs tracking-[0.05em]"
+                                                style={{
+                                                    fontFamily: body,
+                                                    color: C.sage,
+                                                }}
+                                            >
                                                 {d}
                                             </span>
                                         </li>
@@ -362,13 +588,29 @@ function PanelStack() {
 
                                 {/* Photography panel: simulated photo grid */}
                                 {panel.id === 'photography' && (
-                                    <div data-anim className="grid grid-cols-3 gap-2 mt-8">
-                                        {[C.grove, '#3A3A2E', C.sage, '#2A3830', C.wood, '#343430'].map((bg, pi) => (
-                                            <div key={pi} className="aspect-[3/4] rounded-sm relative overflow-hidden"
-                                                 style={{ background: bg }}>
-                                                <div className="absolute inset-0" style={{
-                                                    background: `radial-gradient(circle at ${30 + pi * 10}% ${40 + pi * 5}%, ${C.cream}08, transparent 60%)`,
-                                                }} />
+                                    <div
+                                        data-anim
+                                        className="mt-8 grid grid-cols-3 gap-2"
+                                    >
+                                        {[
+                                            C.grove,
+                                            '#3A3A2E',
+                                            C.sage,
+                                            '#2A3830',
+                                            C.wood,
+                                            '#343430',
+                                        ].map((bg, pi) => (
+                                            <div
+                                                key={pi}
+                                                className="relative aspect-[3/4] overflow-hidden rounded-sm"
+                                                style={{ background: bg }}
+                                            >
+                                                <div
+                                                    className="absolute inset-0"
+                                                    style={{
+                                                        background: `radial-gradient(circle at ${30 + pi * 10}% ${40 + pi * 5}%, ${C.cream}08, transparent 60%)`,
+                                                    }}
+                                                />
                                             </div>
                                         ))}
                                     </div>
@@ -376,10 +618,29 @@ function PanelStack() {
 
                                 {/* Atmosphere panel: technique badges */}
                                 {panel.id === 'atmosphere' && (
-                                    <div data-anim className="flex flex-wrap gap-2 mt-6">
-                                        {['GSAP', 'ScrollTrigger', 'Motion.js', 'Lenis', 'React 19', 'TypeScript', 'Tailwind v4', 'Inertia v2'].map(t => (
-                                            <span key={t} className="text-[10px] tracking-[0.1em] uppercase px-2.5 py-1 rounded-full"
-                                                  style={{ fontFamily: mono, color: panel.accent, border: `1px solid ${panel.accent}30` }}>
+                                    <div
+                                        data-anim
+                                        className="mt-6 flex flex-wrap gap-2"
+                                    >
+                                        {[
+                                            'GSAP',
+                                            'ScrollTrigger',
+                                            'Motion.js',
+                                            'Lenis',
+                                            'React 19',
+                                            'TypeScript',
+                                            'Tailwind v4',
+                                            'Inertia v2',
+                                        ].map((t) => (
+                                            <span
+                                                key={t}
+                                                className="rounded-full px-2.5 py-1 text-[10px] tracking-[0.1em] uppercase"
+                                                style={{
+                                                    fontFamily: mono,
+                                                    color: panel.accent,
+                                                    border: `1px solid ${panel.accent}30`,
+                                                }}
+                                            >
                                                 {t}
                                             </span>
                                         ))}
@@ -389,7 +650,10 @@ function PanelStack() {
                         </div>
 
                         {/* Panel accent stripe — left edge */}
-                        <div className="absolute left-0 top-0 bottom-0 w-[4px]" style={{ background: panel.accent, opacity: 0.3 }} />
+                        <div
+                            className="absolute top-0 bottom-0 left-0 w-[4px]"
+                            style={{ background: panel.accent, opacity: 0.3 }}
+                        />
                     </div>
                 </div>
             ))}
@@ -404,21 +668,24 @@ const deckCards = [
     {
         version: 'Deck v1.0',
         title: 'Interactive Map',
-        description: 'Category filters, proximity data, topographic map with 34 plotted locations and path drawing.',
+        description:
+            'Category filters, proximity data, topographic map with 34 plotted locations and path drawing.',
         href: '/v1',
         accent: '#4d665a',
     },
     {
         version: 'Deck v1.2',
         title: 'Panel Navigation',
-        description: 'Category hero panels, map reveal, scrollytelling location detail with start-point routing.',
+        description:
+            'Category hero panels, map reveal, scrollytelling location detail with start-point routing.',
         href: '/v2',
         accent: '#847963',
     },
     {
         version: 'Deck v1.3',
         title: 'Narrative Journey',
-        description: 'Full scrollytelling experience — a guided walk through the ranch told as a visual story.',
+        description:
+            'Full scrollytelling experience — a guided walk through the ranch told as a visual story.',
         href: '/v3',
         accent: '#96acac',
     },
@@ -427,61 +694,114 @@ const deckCards = [
 function DeckSection() {
     const ref = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        if (!ref.current) return;
-        gsap.fromTo(ref.current.querySelectorAll('[data-reveal]'),
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, stagger: 0.08, duration: 0.7, ease: 'power2.out',
-              scrollTrigger: { trigger: ref.current, start: 'top 80%' } }
-        );
-    }, { scope: ref });
+    useGSAP(
+        () => {
+            if (!ref.current) return;
+            gsap.fromTo(
+                ref.current.querySelectorAll('[data-reveal]'),
+                { y: 40, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.08,
+                    duration: 0.7,
+                    ease: 'power2.out',
+                    scrollTrigger: { trigger: ref.current, start: 'top 80%' },
+                },
+            );
+        },
+        { scope: ref },
+    );
 
     return (
-        <section ref={ref} className="py-20 md:py-24" style={{ borderTop: `1px solid ${C.sage}08` }}>
-            <div className="max-w-5xl mx-auto px-8 md:px-16">
-                <span data-reveal className="block text-[10px] tracking-[0.3em] uppercase mb-4"
-                      style={{ fontFamily: body, color: C.sage }}>
+        <section
+            ref={ref}
+            className="py-20 md:py-24"
+            style={{ borderTop: `1px solid ${C.sage}08` }}
+        >
+            <div className="mx-auto max-w-5xl px-8 md:px-16">
+                <span
+                    data-reveal
+                    className="mb-4 block text-[10px] tracking-[0.3em] uppercase"
+                    style={{ fontFamily: body, color: C.sage }}
+                >
                     Calamigos Ranch
                 </span>
-                <h2 data-reveal className="text-3xl md:text-4xl font-light leading-[1.1] mb-10"
-                    style={{ fontFamily: display, color: C.cream }}>
+                <h2
+                    data-reveal
+                    className="mb-10 text-3xl leading-[1.1] font-light md:text-4xl"
+                    style={{ fontFamily: display, color: C.cream }}
+                >
                     Proposal Decks
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                     {deckCards.map((d, i) => (
                         <motion.a
                             key={i}
                             data-reveal
                             href={d.href}
-                            className="block p-6 md:p-7 rounded-sm relative overflow-hidden group"
-                            style={{ background: `${C.grove}25`, border: `1px solid ${C.sage}10` }}
+                            className="group relative block overflow-hidden rounded-sm p-6 md:p-7"
+                            style={{
+                                background: `${C.grove}25`,
+                                border: `1px solid ${C.sage}10`,
+                            }}
                             whileHover={{ y: -4 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                            transition={{
+                                type: 'spring',
+                                stiffness: 300,
+                                damping: 25,
+                            }}
                         >
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                 style={{ background: `linear-gradient(135deg, ${d.accent}12, transparent)` }} />
+                            <div
+                                className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                                style={{
+                                    background: `linear-gradient(135deg, ${d.accent}12, transparent)`,
+                                }}
+                            />
 
                             <div className="relative z-10">
-                                <span className="text-[10px] tracking-[0.2em] uppercase px-2 py-0.5 rounded-sm inline-block mb-4"
-                                      style={{ fontFamily: mono, color: d.accent, border: `1px solid ${d.accent}30` }}>
+                                <span
+                                    className="mb-4 inline-block rounded-sm px-2 py-0.5 text-[10px] tracking-[0.2em] uppercase"
+                                    style={{
+                                        fontFamily: mono,
+                                        color: d.accent,
+                                        border: `1px solid ${d.accent}30`,
+                                    }}
+                                >
                                     {d.version}
                                 </span>
-                                <h3 className="text-xl font-light mb-2" style={{ fontFamily: display, color: C.cream }}>
+                                <h3
+                                    className="mb-2 text-xl font-light"
+                                    style={{
+                                        fontFamily: display,
+                                        color: C.cream,
+                                    }}
+                                >
                                     {d.title}
                                 </h3>
-                                <p className="text-[11px] leading-[1.7] mb-5" style={{ fontFamily: body, color: C.sage }}>
+                                <p
+                                    className="mb-5 text-[11px] leading-[1.7]"
+                                    style={{ fontFamily: body, color: C.sage }}
+                                >
                                     {d.description}
                                 </p>
-                                <span className="text-[11px] tracking-[0.15em] uppercase group-hover:translate-x-2 transition-transform inline-block"
-                                      style={{ fontFamily: body, color: d.accent }}>
+                                <span
+                                    className="inline-block text-[11px] tracking-[0.15em] uppercase transition-transform group-hover:translate-x-2"
+                                    style={{
+                                        fontFamily: body,
+                                        color: d.accent,
+                                    }}
+                                >
                                     View →
                                 </span>
                             </div>
 
                             {/* Accent bar bottom */}
-                            <div className="absolute bottom-0 left-0 right-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-                                 style={{ background: d.accent }} />
+                            <div
+                                className="absolute right-0 bottom-0 left-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                                style={{ background: d.accent }}
+                            />
                         </motion.a>
                     ))}
                 </div>
@@ -496,14 +816,24 @@ function DeckSection() {
 function DesignBoardsSection() {
     const ref = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        if (!ref.current) return;
-        gsap.fromTo(ref.current.querySelectorAll('[data-reveal]'),
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, stagger: 0.06, duration: 0.6, ease: 'power2.out',
-              scrollTrigger: { trigger: ref.current, start: 'top 80%' } }
-        );
-    }, { scope: ref });
+    useGSAP(
+        () => {
+            if (!ref.current) return;
+            gsap.fromTo(
+                ref.current.querySelectorAll('[data-reveal]'),
+                { y: 30, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.06,
+                    duration: 0.6,
+                    ease: 'power2.out',
+                    scrollTrigger: { trigger: ref.current, start: 'top 80%' },
+                },
+            );
+        },
+        { scope: ref },
+    );
 
     const boards = [
         { label: 'Motion', href: '/moodboard/motion' },
@@ -519,17 +849,31 @@ function DesignBoardsSection() {
     ];
 
     return (
-        <section ref={ref} className="py-16" style={{ borderTop: `1px solid ${C.sage}08` }}>
-            <div className="max-w-5xl mx-auto px-8 md:px-16">
-                <span data-reveal className="block text-[9px] tracking-[0.25em] uppercase mb-4"
-                      style={{ fontFamily: mono, color: `${C.sage}50` }}>
+        <section
+            ref={ref}
+            className="py-16"
+            style={{ borderTop: `1px solid ${C.sage}08` }}
+        >
+            <div className="mx-auto max-w-5xl px-8 md:px-16">
+                <span
+                    data-reveal
+                    className="mb-4 block text-[9px] tracking-[0.25em] uppercase"
+                    style={{ fontFamily: mono, color: `${C.sage}50` }}
+                >
                     Design Study Boards
                 </span>
                 <div data-reveal className="flex flex-wrap gap-2">
-                    {boards.map(b => (
-                        <a key={b.href} href={b.href}
-                           className="text-[10px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-sm transition-colors hover:bg-white/5"
-                           style={{ fontFamily: body, color: C.sage, background: `${C.sage}08` }}>
+                    {boards.map((b) => (
+                        <a
+                            key={b.href}
+                            href={b.href}
+                            className="rounded-sm px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase transition-colors hover:bg-white/5"
+                            style={{
+                                fontFamily: body,
+                                color: C.sage,
+                                background: `${C.sage}08`,
+                            }}
+                        >
                             {b.label}
                         </a>
                     ))}
@@ -545,55 +889,98 @@ function DesignBoardsSection() {
 function ContactFooter() {
     const ref = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        if (!ref.current) return;
-        gsap.fromTo(ref.current.querySelectorAll('[data-reveal]'),
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, stagger: 0.08, duration: 0.7, ease: 'power2.out',
-              scrollTrigger: { trigger: ref.current, start: 'top 80%' } }
-        );
-    }, { scope: ref });
+    useGSAP(
+        () => {
+            if (!ref.current) return;
+            gsap.fromTo(
+                ref.current.querySelectorAll('[data-reveal]'),
+                { y: 30, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.08,
+                    duration: 0.7,
+                    ease: 'power2.out',
+                    scrollTrigger: { trigger: ref.current, start: 'top 80%' },
+                },
+            );
+        },
+        { scope: ref },
+    );
 
     return (
-        <footer ref={ref} className="py-24 md:py-32 relative" style={{ borderTop: `1px solid ${C.sage}10` }}>
+        <footer
+            ref={ref}
+            className="relative py-24 md:py-32"
+            style={{ borderTop: `1px solid ${C.sage}10` }}
+        >
             <TopoLines opacity={0.03} />
 
-            <div className="max-w-4xl mx-auto px-8 md:px-16 text-center relative z-10">
-                <span data-reveal className="block text-[10px] tracking-[0.4em] uppercase mb-8"
-                      style={{ fontFamily: mono, color: C.sage }}>
+            <div className="relative z-10 mx-auto max-w-4xl px-8 text-center md:px-16">
+                <span
+                    data-reveal
+                    className="mb-8 block text-[10px] tracking-[0.4em] uppercase"
+                    style={{ fontFamily: mono, color: C.sage }}
+                >
                     Let's build something beautiful
                 </span>
 
-                <h2 data-reveal className="text-5xl md:text-7xl font-light leading-[0.95] mb-8"
-                    style={{ fontFamily: display, color: C.cream }}>
+                <h2
+                    data-reveal
+                    className="mb-8 text-5xl leading-[0.95] font-light md:text-7xl"
+                    style={{ fontFamily: display, color: C.cream }}
+                >
                     Dave Peloso
                 </h2>
 
-                <div data-reveal className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
-                    <a href="tel:818-312-7735"
-                       className="flex items-center gap-2 text-sm tracking-[0.1em] transition-colors hover:text-white"
-                       style={{ fontFamily: body, color: C.sage }}>
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.woodLight }} />
+                <div
+                    data-reveal
+                    className="mb-12 flex flex-col items-center justify-center gap-6 sm:flex-row"
+                >
+                    <a
+                        href="tel:818-312-7735"
+                        className="flex items-center gap-2 text-sm tracking-[0.1em] transition-colors hover:text-white"
+                        style={{ fontFamily: body, color: C.sage }}
+                    >
+                        <span
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ background: C.woodLight }}
+                        />
                         818-312-7735
                     </a>
-                    <span className="hidden sm:block w-[1px] h-4" style={{ background: `${C.sage}30` }} />
-                    <a href="mailto:davepeloso@gmail.com"
-                       className="flex items-center gap-2 text-sm tracking-[0.1em] transition-colors hover:text-white"
-                       style={{ fontFamily: body, color: C.sage }}>
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.woodLight }} />
+                    <span
+                        className="hidden h-4 w-[1px] sm:block"
+                        style={{ background: `${C.sage}30` }}
+                    />
+                    <a
+                        href="mailto:davepeloso@gmail.com"
+                        className="flex items-center gap-2 text-sm tracking-[0.1em] transition-colors hover:text-white"
+                        style={{ fontFamily: body, color: C.sage }}
+                    >
+                        <span
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ background: C.woodLight }}
+                        />
                         davepeloso@gmail.com
                     </a>
                 </div>
 
                 {/* Color swatch signature */}
-                <div data-reveal className="flex justify-center gap-1.5 mb-12">
+                <div data-reveal className="mb-12 flex justify-center gap-1.5">
                     {swatches.map((color, i) => (
-                        <div key={i} className="w-8 h-1 rounded-full" style={{ background: color, opacity: 0.5 }} />
+                        <div
+                            key={i}
+                            className="h-1 w-8 rounded-full"
+                            style={{ background: color, opacity: 0.5 }}
+                        />
                     ))}
                 </div>
 
-                <p data-reveal className="text-[10px] tracking-[0.15em]"
-                   style={{ fontFamily: mono, color: `${C.sage}35` }}>
+                <p
+                    data-reveal
+                    className="text-[10px] tracking-[0.15em]"
+                    style={{ fontFamily: mono, color: `${C.sage}35` }}
+                >
                     Media & Design · Calamigos Ranch Proposal · 2026
                 </p>
             </div>
@@ -614,10 +1001,12 @@ export default function Cover() {
 
     return (
         <SmoothScroll lerp={0.08} duration={1.4}>
-            <div className="min-h-screen" style={{ background: C.bg, color: C.cream }}>
+            <div
+                className="min-h-screen"
+                style={{ background: C.bg, color: C.cream }}
+            >
                 <FilmGrain />
                 <Hero />
-                <DeckSection />
                 <PanelStack />
                 <DesignBoardsSection />
                 <ContactFooter />

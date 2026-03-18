@@ -122,7 +122,7 @@ const LOCATIONS: MapLocation[] = [
     { name: 'Members Pool & Studio', shortName: 'Members Pool', x: 0.24, y: 0.56, category: 'wellness', description: 'Private pool with yoga studio and sun deck.' },
     { name: 'Pavilion Pool', shortName: 'Pvln Pool', x: 0.37, y: 0.83, category: 'wellness', description: 'Adults-only infinity pool with mountain backdrop.' },
     { name: 'Estate Pool', shortName: 'Estate Pool', x: 0.77, y: 0.22, category: 'wellness', description: 'Hillside pool with panoramic canyon views.' },
-    { name: 'The Beach Club', shortName: 'Beach Club', x: 0.62, y: 0.08, category: 'wellness', description: 'Sandy oasis with cabanas and a swim-up bar.' },
+    { name: 'The Beach Club', shortName: 'Beach Club', x: 0.67, y: 0.06, category: 'wellness', description: 'Sandy oasis with cabanas and a swim-up bar.' },
     { name: 'Ferris Wheel', shortName: 'Ferris Whl', x: 0.54, y: 0.78, category: 'wellness', description: 'Iconic ranch landmark with evening light shows.' },
     { name: 'Stables', shortName: 'Stables', x: 0.09, y: 0.44, category: 'wellness', description: 'Equestrian center with guided trail rides.' },
     { name: 'The Vineyards', shortName: 'Vineyards', x: 0.13, y: 0.41, category: 'wellness', description: 'Estate vineyard with seasonal tasting events.' },
@@ -766,13 +766,13 @@ function HeroSection() {
     };
 
     return (
-        <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
+        <section ref={ref} className="relative h-[85vh] flex items-center justify-center overflow-hidden">
             <TopographicContours opacity={0.06} />
 
             {/* Horizontal accent line */}
             <div
                 className="hero-line absolute left-0 right-0 origin-left"
-                style={{ top: '58%', height: '1px', background: `${C.sand}20` }}
+                style={{ top: '55%', height: '1px', background: `${C.sand}20` }}
             />
 
             <div className="relative z-10 text-center px-8 max-w-4xl">
@@ -780,11 +780,11 @@ function HeroSection() {
                     className="hero-label block text-[10px] tracking-[0.4em] uppercase mb-8"
                     style={{ fontFamily: mono, color: C.sage }}
                 >
-                    Interactive Venue Guide
+                    Calamigos Ranch
                 </span>
 
                 <h1 className="overflow-hidden mb-6">
-                    {'Calamigos Ranch'.split(' ').map((word, i) => (
+                    {'Guided Tour'.split(' ').map((word, i) => (
                         <span
                             key={i}
                             className="hero-word inline-block text-[clamp(3rem,10vw,8rem)] font-light leading-[0.92] tracking-tight mx-[0.06em]"
@@ -799,8 +799,8 @@ function HeroSection() {
                     className="hero-sub text-base md:text-lg tracking-wide max-w-xl mx-auto leading-relaxed mb-10"
                     style={{ fontFamily: body, color: C.sage }}
                 >
-                    A luxury digital property guide. Explore 34 spaces across the ranch —
-                    find your venue, discover what's nearby, and navigate with ease.
+                    Explore 34 spaces across the ranch — find your venue, discover
+                    what's nearby, and navigate with ease.
                 </p>
 
                 <button
@@ -883,7 +883,7 @@ function VenueMap() {
     }, []);
 
     return (
-        <section id="venue-map" className="relative min-h-screen py-16 md:py-24">
+        <section id="venue-map" className="relative min-h-screen py-8 md:py-12">
             {/* Section header */}
             <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12">
                 <span
@@ -981,8 +981,19 @@ function VenueMap() {
                             border: `1px solid ${C.sage}15`,
                         }}
                     >
-                        {/* Topographic background */}
-                        <TopographicContours opacity={0.1} />
+                        {/* Illustrated map image — desaturated & darkened to fit brand */}
+                        <img
+                            src="/images-from-site/map.jpg"
+                            alt=""
+                            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                            style={{
+                                opacity: 0.15,
+                                filter: 'saturate(0.3) brightness(0.6) contrast(1.1)',
+                                mixBlendMode: 'luminosity',
+                                objectPosition: '52% 47%',
+                            }}
+                        />
+                        <TopographicContours opacity={0.04} />
 
                         {/* Grid overlay */}
                         <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.03 }}>
@@ -1116,7 +1127,7 @@ function StatsBar() {
     ];
 
     return (
-        <section ref={ref} className="py-20">
+        <section ref={ref} className="py-8 pb-12">
             <div className="max-w-5xl mx-auto px-6 md:px-12">
                 <div className="flex flex-wrap justify-center gap-8 md:gap-16">
                     {stats.map((s, i) => (
