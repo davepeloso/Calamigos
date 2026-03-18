@@ -26,3 +26,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/public/dave-samples
+ffmpeg2pass*

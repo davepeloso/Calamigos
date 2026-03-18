@@ -126,7 +126,125 @@ function FilmGrain() {
 }
 
 /* ================================================================== */
-/*  HERO — Opening title                                               */
+/*  HERO VIDEO BACKGROUND — rotates between clips                      */
+/* ================================================================== */
+const heroClips = [
+    { landscape: '/videos/hero-landscape-04.mp4', portrait: '/videos/hero-portrait-04.mp4' },
+    { landscape: '/videos/hero-landscape-51.mp4', portrait: '/videos/hero-portrait-51.mp4' },
+    { landscape: '/videos/hero-landscape-01.mp4', portrait: '/videos/hero-portrait-01.mp4' },
+];
+
+function HeroVideo() {
+    const [clipIndex, setClipIndex] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const landscapeRef = useRef<HTMLVideoElement>(null);
+    const portraitRef = useRef<HTMLVideoElement>(null);
+
+    // Rotate to next clip when the current one ends
+    const handleEnded = () => {
+        setClipIndex((prev) => (prev + 1) % heroClips.length);
+    };
+
+    // Crossfade: reset loaded state on clip change, then fade in
+    useEffect(() => {
+        setIsLoaded(false);
+
+        const landscape = landscapeRef.current;
+        const portrait = portraitRef.current;
+
+        const onCanPlay = () => setIsLoaded(true);
+
+        landscape?.addEventListener('canplaythrough', onCanPlay);
+        portrait?.addEventListener('canplaythrough', onCanPlay);
+
+        landscape?.load();
+        portrait?.load();
+
+        return () => {
+            landscape?.removeEventListener('canplaythrough', onCanPlay);
+            portrait?.removeEventListener('canplaythrough', onCanPlay);
+        };
+    }, [clipIndex]);
+
+    const clip = heroClips[clipIndex];
+
+    return (
+        <div className="hero-video absolute inset-0 z-0 overflow-hidden">
+            {/* Landscape video — desktop */}
+            <video
+                ref={landscapeRef}
+                key={`landscape-${clipIndex}`}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={handleEnded}
+                className="absolute inset-0 hidden h-full w-full object-cover md:block"
+                style={{
+                    opacity: isLoaded ? 1 : 0,
+                    transition: 'opacity 1.8s ease-out',
+                }}
+            >
+                <source src={clip.landscape} type="video/mp4" />
+            </video>
+
+            {/* Portrait video — mobile */}
+            <video
+                ref={portraitRef}
+                key={`portrait-${clipIndex}`}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={handleEnded}
+                className="absolute inset-0 block h-full w-full object-cover md:hidden"
+                style={{
+                    opacity: isLoaded ? 1 : 0,
+                    transition: 'opacity 1.8s ease-out',
+                }}
+            >
+                <source src={clip.portrait} type="video/mp4" />
+            </video>
+
+            {/* Gradient overlays for depth & text legibility */}
+            <div
+                className="absolute inset-0 z-[1]"
+                style={{
+                    background: `linear-gradient(
+                        to bottom,
+                        ${C.bg}E6 0%,
+                        ${C.bg}99 15%,
+                        ${C.bg}4D 35%,
+                        ${C.bg}4D 65%,
+                        ${C.bg}CC 85%,
+                        ${C.bg} 100%
+                    )`,
+                }}
+            />
+
+            {/* Radial vignette */}
+            <div
+                className="absolute inset-0 z-[2]"
+                style={{
+                    background: `radial-gradient(ellipse at center, transparent 30%, ${C.bg}B3 80%, ${C.bg} 100%)`,
+                }}
+            />
+
+            {/* Subtle color tint to match brand palette */}
+            <div
+                className="absolute inset-0 z-[3]"
+                style={{
+                    background: C.groveDark,
+                    mixBlendMode: 'multiply',
+                    opacity: 0.3,
+                }}
+            />
+        </div>
+    );
+}
+
+/* ================================================================== */
+/*  HERO — Opening title with cinematic video background               */
 /* ================================================================== */
 function Hero() {
     const ref = useRef<HTMLDivElement>(null);
@@ -135,6 +253,13 @@ function Hero() {
         () => {
             if (!ref.current) return;
             const tl = gsap.timeline({ delay: 0.4 });
+
+            // Video fades in with a slow scale-up
+            tl.fromTo(
+                ref.current.querySelector('.hero-video'),
+                { scale: 1.1, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 2.5, ease: 'power2.out' },
+            );
 
             // Swatch bar grows in
             tl.fromTo(
@@ -147,6 +272,7 @@ function Hero() {
                     duration: 0.8,
                     ease: 'power3.out',
                 },
+                '-=2.0',
             );
 
             // Top label
@@ -154,7 +280,7 @@ function Hero() {
                 ref.current.querySelector('.hero-label'),
                 { y: 15, opacity: 0 },
                 { y: 0, opacity: 0.4, duration: 0.7, ease: 'power2.out' },
-                '-=0.4',
+                '-=1.5',
             );
 
             // Name words
@@ -210,9 +336,20 @@ function Hero() {
                 '-=0.2',
             );
 
-            // Parallax exit
+            // Scroll-driven: video scales up + fades, content floats away
+            gsap.to(ref.current.querySelector('.hero-video'), {
+                scale: 1.15,
+                opacity: 0,
+                scrollTrigger: {
+                    trigger: ref.current,
+                    start: 'top top',
+                    end: '80% top',
+                    scrub: 1.5,
+                },
+            });
+
             gsap.to(ref.current.querySelector('.hero-content'), {
-                y: -100,
+                y: -120,
                 opacity: 0,
                 scrollTrigger: {
                     trigger: ref.current,
@@ -227,7 +364,13 @@ function Hero() {
 
     return (
         <section ref={ref} className="relative h-[130vh] overflow-hidden">
-            <TopoLines opacity={0.04} />
+            {/* Cinematic video background */}
+            <HeroVideo />
+
+            {/* Topo lines on top of video for texture */}
+            <div className="relative z-[5]">
+                <TopoLines opacity={0.03} />
+            </div>
 
             {/* Color swatch strip — left edge */}
             <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col">
@@ -254,7 +397,11 @@ function Hero() {
                             <span
                                 key={i}
                                 className="name-word mx-[0.06em] inline-block text-[clamp(3.5rem,12vw,9rem)] leading-[0.88] font-light tracking-tight"
-                                style={{ fontFamily: display, color: C.cream }}
+                                style={{
+                                    fontFamily: display,
+                                    color: C.cream,
+                                    textShadow: '0 2px 40px rgba(0,0,0,0.5)',
+                                }}
                             >
                                 {word}
                             </span>
@@ -279,10 +426,10 @@ function Hero() {
                             <a
                                 key={i}
                                 href={d.href}
-                                className="group relative block overflow-hidden rounded-sm px-4 py-3.5 text-center transition-transform duration-300 hover:-translate-y-1"
+                                className="group relative block overflow-hidden rounded-sm px-4 py-3.5 text-center backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1"
                                 style={{
-                                    background: `${C.grove}20`,
-                                    border: `1px solid ${C.sage}10`,
+                                    background: `${C.grove}35`,
+                                    border: `1px solid ${C.sage}15`,
                                 }}
                             >
                                 <div
