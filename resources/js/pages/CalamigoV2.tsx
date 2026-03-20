@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, createContext } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'motion/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,19 +9,82 @@ import DeckNav from '@/components/DeckNav';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ================================================================== */
-/*  BRAND TOKENS                                                       */
+/*  BRAND TOKENS — 3 switchable palettes from Color Atmosphere study   */
 /* ================================================================== */
-const C = {
-    groveDark: '#1A2E25',
-    grove: '#2F4A3F',
-    groveLight: '#3D6152',
-    sand: '#EAE4D8',
-    cream: '#F5F2EA',
-    sage: '#7A8F82',
-    wood: '#8A6B4F',
-    charcoal: '#2C2C2C',
-    divider: '#DCD6CA',
-} as const;
+type PaletteKey = 'grove' | 'complementary' | 'coastal' | 'split';
+
+interface Palette {
+    groveDark: string;
+    grove: string;
+    groveLight: string;
+    sand: string;
+    cream: string;
+    sage: string;
+    wood: string;
+    charcoal: string;
+    divider: string;
+}
+
+const PALETTES: Record<PaletteKey, Palette> = {
+    /* Original — deep monochromatic greens with warm neutrals */
+    grove: {
+        groveDark: '#1A2E25',
+        grove: '#2F4A3F',
+        groveLight: '#3D6152',
+        sand: '#EAE4D8',
+        cream: '#F5F2EA',
+        sage: '#7A8F82',
+        wood: '#8A6B4F',
+        charcoal: '#2C2C2C',
+        divider: '#DCD6CA',
+    },
+    /* Complementary — slate blue + warm brown, cool/warm tension */
+    complementary: {
+        groveDark: '#332F2B',
+        grove: '#456573',
+        groveLight: '#5A7A88',
+        sand: '#ADC0C8',
+        cream: '#FCF5ED',
+        sage: '#7A9098',
+        wood: '#735D45',
+        charcoal: '#2A2622',
+        divider: '#C8D6DC',
+    },
+    /* Coastal Complementary — ocean blue-grey anchored by driftwood brown */
+    coastal: {
+        groveDark: '#292F33',
+        grove: '#405F73',
+        groveLight: '#5A7588',
+        sand: '#C8BFB2',
+        cream: '#B3DAF2',
+        sage: '#7A8E98',
+        wood: '#735E40',
+        charcoal: '#1E2328',
+        divider: '#D4CCC0',
+    },
+    /* Split Complementary — dual warm earth flanking a steel blue */
+    split: {
+        groveDark: '#2A2E33',
+        grove: '#405F73',
+        groveLight: '#5A7588',
+        sand: '#F2E0B3',
+        cream: '#FAF0D8',
+        sage: '#7A8E98',
+        wood: '#736440',
+        charcoal: '#735540',
+        divider: '#E0D0A0',
+    },
+};
+
+const PALETTE_META: Record<PaletteKey, { label: string; description: string; swatch: string }> = {
+    grove:         { label: 'Grove',         description: 'Monochromatic',        swatch: '#2F4A3F' },
+    complementary: { label: 'Complementary', description: 'Complementary',        swatch: '#456573' },
+    coastal:       { label: 'Coastal',       description: 'Coastal Complementary', swatch: '#405F73' },
+    split:         { label: 'Split',         description: 'Split Complementary',   swatch: '#405F73' },
+};
+
+/* C is a convenience alias (unused now, kept for type reference) */
+let C: Palette = PALETTES.grove;
 
 const display = "'Cormorant Garamond', Georgia, serif";
 const body = "'DM Sans', system-ui, sans-serif";
@@ -56,13 +119,48 @@ interface CategoryDef {
     description: string;
 }
 
-const CATEGORIES: CategoryDef[] = [
-    { id: 'venues', label: 'Event Venues', color: '#847963', colorFull: '#A4956E', description: 'Ceremony & reception spaces' },
-    { id: 'stay', label: 'Accommodations', color: '#bdc2b6', colorFull: '#D4D9CE', description: 'Cottages & lodging' },
-    { id: 'dining', label: 'Dine & Drink', color: '#4d665a', colorFull: '#5E7D6E', description: 'Restaurants, bars & markets' },
-    { id: 'wellness', label: 'Wellness & Play', color: '#96acac', colorFull: '#A8C0C0', description: 'Pools, spa & recreation' },
-    { id: 'services', label: 'Services', color: '#4b544e', colorFull: '#5D665F', description: 'Parking, lobby & offices' },
-];
+const CATEGORIES_BY_PALETTE: Record<PaletteKey, CategoryDef[]> = {
+    grove: [
+        { id: 'venues', label: 'Event Venues', color: '#847963', colorFull: '#A4956E', description: 'Ceremony & reception spaces' },
+        { id: 'stay', label: 'Accommodations', color: '#bdc2b6', colorFull: '#D4D9CE', description: 'Cottages & lodging' },
+        { id: 'dining', label: 'Dine & Drink', color: '#4d665a', colorFull: '#5E7D6E', description: 'Restaurants, bars & markets' },
+        { id: 'wellness', label: 'Wellness & Play', color: '#96acac', colorFull: '#A8C0C0', description: 'Pools, spa & recreation' },
+        { id: 'services', label: 'Services', color: '#4b544e', colorFull: '#5D665F', description: 'Parking, lobby & offices' },
+    ],
+    complementary: [
+        { id: 'venues', label: 'Event Venues', color: '#456573', colorFull: '#5A7A88', description: 'Ceremony & reception spaces' },
+        { id: 'stay', label: 'Accommodations', color: '#ADC0C8', colorFull: '#C0D0D8', description: 'Cottages & lodging' },
+        { id: 'dining', label: 'Dine & Drink', color: '#735D45', colorFull: '#8A7058', description: 'Restaurants, bars & markets' },
+        { id: 'wellness', label: 'Wellness & Play', color: '#8DA0A8', colorFull: '#A0B4BE', description: 'Pools, spa & recreation' },
+        { id: 'services', label: 'Services', color: '#5A4A38', colorFull: '#6B5A45', description: 'Parking, lobby & offices' },
+    ],
+    coastal: [
+        { id: 'venues', label: 'Event Venues', color: '#735E40', colorFull: '#8A7050', description: 'Ceremony & reception spaces' },
+        { id: 'stay', label: 'Accommodations', color: '#C8BFB2', colorFull: '#D8D0C4', description: 'Cottages & lodging' },
+        { id: 'dining', label: 'Dine & Drink', color: '#405F73', colorFull: '#5A7588', description: 'Restaurants, bars & markets' },
+        { id: 'wellness', label: 'Wellness & Play', color: '#8AACCC', colorFull: '#B3DAF2', description: 'Pools, spa & recreation' },
+        { id: 'services', label: 'Services', color: '#3A4A52', colorFull: '#4A5E68', description: 'Parking, lobby & offices' },
+    ],
+    split: [
+        { id: 'venues', label: 'Event Venues', color: '#736440', colorFull: '#8A7850', description: 'Ceremony & reception spaces' },
+        { id: 'stay', label: 'Accommodations', color: '#B3DAF2', colorFull: '#C8E4F8', description: 'Cottages & lodging' },
+        { id: 'dining', label: 'Dine & Drink', color: '#405F73', colorFull: '#5A7588', description: 'Restaurants, bars & markets' },
+        { id: 'wellness', label: 'Wellness & Play', color: '#F2E0B3', colorFull: '#F8ECC8', description: 'Pools, spa & recreation' },
+        { id: 'services', label: 'Services', color: '#735540', colorFull: '#8A6850', description: 'Parking, lobby & offices' },
+    ],
+};
+
+let CATEGORIES: CategoryDef[] = CATEGORIES_BY_PALETTE.grove;
+
+/* Palette context — sub-components use usePalette() to get reactive colors */
+const PaletteCtx = createContext<{ colors: Palette; categories: CategoryDef[] }>({
+    colors: PALETTES.grove,
+    categories: CATEGORIES_BY_PALETTE.grove,
+});
+
+function usePalette() {
+    return useContext(PaletteCtx);
+}
 
 /* ================================================================== */
 /*  LOCATION DATA — 34 pins                                            */
@@ -167,6 +265,7 @@ function getWaypoints(from: MapLocation, to: MapLocation): MapLocation[] {
 /*  TOPOGRAPHIC SVG                                                    */
 /* ================================================================== */
 function TopoLines({ opacity = 0.08 }: { opacity?: number }) {
+    const { colors: C } = usePalette();
     return (
         <svg viewBox="0 0 1000 700" fill="none" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" style={{ opacity }}>
             <path d="M-50 350 C100 280,200 200,350 220 S550 300,650 250 S800 180,950 220 L1050 220" stroke={C.sage} strokeWidth="0.8" />
@@ -192,6 +291,7 @@ function TopoLines({ opacity = 0.08 }: { opacity?: number }) {
 /*  DEV BOARDS NAV (bottom right)                                      */
 /* ================================================================== */
 function DevBoardsNav() {
+    const { colors: C } = usePalette();
     const [isOpen, setIsOpen] = useState(false);
     const pages = [
         { label: 'Motion', href: '/moodboard/motion' },
@@ -253,6 +353,7 @@ interface HeroPanelsProps {
 }
 
 function HeroPanels({ onSelectCategory }: HeroPanelsProps) {
+    const { colors: C, categories: CATEGORIES } = usePalette();
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     return (
@@ -304,20 +405,18 @@ function HeroPanels({ onSelectCategory }: HeroPanelsProps) {
                                 0{i + 1}
                             </motion.span>
 
-                            {/* Category name — vertical by default, horizontal on hover */}
+                            {/* Category name — small horizontal, scales up on hover */}
                             <motion.h2
-                                className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide"
+                                className="text-sm md:text-base font-light tracking-wide whitespace-nowrap"
                                 style={{
                                     fontFamily: display,
                                     color: C.groveDark,
-                                    writingMode: isHovered ? 'horizontal-tb' : 'vertical-rl',
-                                    textOrientation: 'mixed',
-                                    transition: 'writing-mode 0.3s',
                                 }}
                                 animate={{
                                     opacity: isHovered ? 1 : 0.7,
-                                    scale: isHovered ? 1.05 : 1,
+                                    scale: isHovered ? 1.75 : 1,
                                 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                             >
                                 {cat.label}
                             </motion.h2>
@@ -391,6 +490,7 @@ interface MapRevealProps {
 }
 
 function MapReveal({ selectedCategory, onSelectLocation, onBack }: MapRevealProps) {
+    const { colors: C, categories: CATEGORIES } = usePalette();
     const cat = CATEGORIES.find(c => c.id === selectedCategory)!;
     const categoryLocations = useMemo(
         () => LOCATIONS.map((l, i) => ({ ...l, globalIndex: i })).filter(l => l.category === selectedCategory),
@@ -514,6 +614,7 @@ interface LocationDetailProps {
 }
 
 function LocationDetail({ locationIndex, onBack, onSelectStartPoint, startPointIndex }: LocationDetailProps) {
+    const { colors: C, categories: CATEGORIES } = usePalette();
     const location = LOCATIONS[locationIndex];
     const cat = CATEGORIES.find(c => c.id === location.category)!;
     const nearby = useMemo(() => getNearby(location, 8), [locationIndex]);
@@ -916,8 +1017,117 @@ function RoutePathSVG({ from, to, waypoints, color }: { from: MapLocation; to: M
 /* ================================================================== */
 type Phase = 'hero' | 'map' | 'location';
 
+/* ================================================================== */
+/*  PALETTE SWITCHER UI                                                */
+/* ================================================================== */
+function PaletteSwitcher({
+    active,
+    onChange,
+}: {
+    active: PaletteKey;
+    onChange: (key: PaletteKey) => void;
+}) {
+    const { colors: C } = usePalette();
+    const [open, setOpen] = useState(false);
+    const keys: PaletteKey[] = ['grove', 'complementary', 'coastal', 'split'];
+
+    return (
+        <motion.div
+            className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.5 }}
+        >
+            {/* Palette options — expand upward */}
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        className="flex flex-col gap-1.5"
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {keys
+                            .filter(k => k !== active)
+                            .map(k => (
+                                <button
+                                    key={k}
+                                    onClick={() => {
+                                        onChange(k);
+                                        setOpen(false);
+                                    }}
+                                    className="flex items-center gap-2.5 px-3 py-2 rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105"
+                                    style={{
+                                        background: `${PALETTES[k].charcoal}CC`,
+                                        border: `1px solid ${PALETTES[k].sage}30`,
+                                    }}
+                                >
+                                    <span
+                                        className="w-3 h-3 rounded-full ring-1 ring-white/20 shrink-0"
+                                        style={{ background: PALETTE_META[k].swatch }}
+                                    />
+                                    <span className="flex flex-col items-start leading-tight">
+                                        <span
+                                            className="text-[10px] tracking-[0.15em] uppercase"
+                                            style={{ fontFamily: mono, color: PALETTES[k].cream }}
+                                        >
+                                            {PALETTE_META[k].label}
+                                        </span>
+                                        <span
+                                            className="text-[8px] tracking-[0.1em] uppercase opacity-50"
+                                            style={{ fontFamily: mono, color: PALETTES[k].cream }}
+                                        >
+                                            {PALETTE_META[k].description}
+                                        </span>
+                                    </span>
+                                </button>
+                            ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Toggle button */}
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-full backdrop-blur-md shadow-lg"
+                style={{
+                    background: `${C.charcoal}CC`,
+                    border: `1px solid ${C.sage}30`,
+                }}
+            >
+                <span
+                    className="w-3 h-3 rounded-full ring-1 ring-white/20 shrink-0"
+                    style={{ background: PALETTE_META[active].swatch }}
+                />
+                <span className="flex flex-col items-start leading-tight">
+                    <span
+                        className="text-[10px] tracking-[0.15em] uppercase"
+                        style={{ fontFamily: mono, color: C.cream }}
+                    >
+                        {PALETTE_META[active].label}
+                    </span>
+                    <span
+                        className="text-[8px] tracking-[0.1em] uppercase opacity-50"
+                        style={{ fontFamily: mono, color: C.cream }}
+                    >
+                        {PALETTE_META[active].description}
+                    </span>
+                </span>
+            </button>
+        </motion.div>
+    );
+}
+
 export default function CalamigoV2() {
     useFonts();
+
+    const [paletteKey, setPaletteKey] = useState<PaletteKey>('grove');
+
+    const paletteCtxValue = useMemo(() => ({
+        colors: PALETTES[paletteKey],
+        categories: CATEGORIES_BY_PALETTE[paletteKey],
+    }), [paletteKey]);
 
     const [phase, setPhase] = useState<Phase>('hero');
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -958,48 +1168,56 @@ export default function CalamigoV2() {
         return () => clearTimeout(timeout);
     }, [phase]);
 
+    const pc = paletteCtxValue.colors;
+
     return (
-        <SmoothScroll lerp={0.09} duration={1.3}>
-            <div className="min-h-screen" style={{ background: C.groveDark, color: C.cream }}>
-                <DeckNav currentDeck="v1.2" />
-                <DevBoardsNav />
+        <PaletteCtx.Provider value={paletteCtxValue}>
+            <SmoothScroll lerp={0.09} duration={1.3}>
+                <div
+                    className="min-h-screen transition-colors duration-700"
+                    style={{ background: pc.groveDark, color: pc.cream }}
+                >
+                    <DeckNav currentDeck="v1.2" />
+                    <DevBoardsNav />
+                    <PaletteSwitcher active={paletteKey} onChange={setPaletteKey} />
 
-                <AnimatePresence mode="wait">
-                    {phase === 'hero' && (
-                        <motion.div key="hero" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
-                            <HeroPanels onSelectCategory={handleSelectCategory} />
-                        </motion.div>
-                    )}
+                    <AnimatePresence mode="wait">
+                        {phase === 'hero' && (
+                            <motion.div key="hero" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
+                                <HeroPanels onSelectCategory={handleSelectCategory} />
+                            </motion.div>
+                        )}
 
-                    {phase === 'map' && selectedCategory && (
-                        <motion.div key="map" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
-                            <MapReveal
-                                selectedCategory={selectedCategory}
-                                onSelectLocation={handleSelectLocation}
-                                onBack={handleBackToHero}
-                            />
-                        </motion.div>
-                    )}
+                        {phase === 'map' && selectedCategory && (
+                            <motion.div key="map" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
+                                <MapReveal
+                                    selectedCategory={selectedCategory}
+                                    onSelectLocation={handleSelectLocation}
+                                    onBack={handleBackToHero}
+                                />
+                            </motion.div>
+                        )}
 
-                    {phase === 'location' && selectedLocationIndex !== null && (
-                        <motion.div key="location" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
-                            <LocationDetail
-                                locationIndex={selectedLocationIndex}
-                                onBack={handleBackToMap}
-                                onSelectStartPoint={setStartPointIndex}
-                                startPointIndex={startPointIndex}
-                            />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        {phase === 'location' && selectedLocationIndex !== null && (
+                            <motion.div key="location" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
+                                <LocationDetail
+                                    locationIndex={selectedLocationIndex}
+                                    onBack={handleBackToMap}
+                                    onSelectStartPoint={setStartPointIndex}
+                                    startPointIndex={startPointIndex}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                {/* Footer */}
-                <footer className="py-12 text-center" style={{ borderTop: `1px solid ${C.sage}08` }}>
-                    <p className="text-[10px] tracking-[0.15em]" style={{ fontFamily: mono, color: `${C.sage}30` }}>
-                        Calamigos Ranch · v1.1 · Design & Development by Dave Peloso
-                    </p>
-                </footer>
-            </div>
-        </SmoothScroll>
+                    {/* Footer */}
+                    <footer className="py-12 text-center" style={{ borderTop: `1px solid ${pc.sage}08` }}>
+                        <p className="text-[10px] tracking-[0.15em]" style={{ fontFamily: mono, color: `${pc.sage}30` }}>
+                            Calamigos Ranch · v1.1 · Design & Development by Dave Peloso
+                        </p>
+                    </footer>
+                </div>
+            </SmoothScroll>
+        </PaletteCtx.Provider>
     );
 }

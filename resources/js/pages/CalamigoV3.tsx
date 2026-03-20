@@ -787,18 +787,16 @@ function CategoryMap({ onSelectCategory, onSelectLocation, selectedCategory, isR
                                                 </motion.span>
 
                                                 <motion.h2
-                                                    className="text-lg md:text-xl lg:text-2xl font-light tracking-wide"
+                                                    className="text-sm md:text-base font-light tracking-wide whitespace-nowrap"
                                                     style={{
                                                         fontFamily: display,
                                                         color: `${C.cream}D0`,
-                                                        writingMode: isHovered ? 'horizontal-tb' : 'vertical-rl',
-                                                        textOrientation: 'mixed',
-                                                        transition: 'writing-mode 0.3s',
                                                     }}
                                                     animate={{
                                                         opacity: isHovered ? 1 : 0.65,
-                                                        scale: isHovered ? 1.05 : 1,
+                                                        scale: isHovered ? 1.75 : 1,
                                                     }}
+                                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                                                 >
                                                     {c.label}
                                                 </motion.h2>
